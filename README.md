@@ -8,6 +8,7 @@ Retro-feeling quality-of-life tweaks for jailbroken iOS 6 devices, starting with
 - OS: iOS 6.1.6 / 10B500
 - Jailbreak runtime: Cydia + MobileSubstrate + PreferenceLoader
 - First tweak: battery percentage next to the stock battery icon
+- Next tweak in progress: CH33ZE Brightness Tray, an extra iOS 6 app-switcher page with a brightness slider
 
 ## Battery percentage status
 
@@ -24,11 +25,11 @@ A real MobileSubstrate version is planned next if we want custom positioning/sty
 ## Repo layout
 
 ```text
+ch33zebrightnesstray/  Theos source for the app-switcher brightness page.
 device-backups/   Local-only iPod preference backups; git-ignored.
 packages/         Built .deb packages; git-ignored until intentionally released.
 repo/             Cydia/APT repo output.
 tools/            Host-side helper scripts.
-tweaks/           Theos tweak source projects.
 ```
 
 ## Safety defaults
