@@ -1,8 +1,8 @@
 Package: com.ch33ze.optimized
 Name: Optimized
-Version: 0.1.0
+Version: 0.2.0
 Architecture: iphoneos-arm
-Description: Simple iOS 6 performance toggles for games, music, and videos.
+Description: iOS 6 multitasking tray optimizer with RAM stats, Low Power, SSH controls, and safe cleanup tools.
 Maintainer: CH33ZE
 Author: CH33ZE
 Section: Tweaks

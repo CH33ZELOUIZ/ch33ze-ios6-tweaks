@@ -7,8 +7,9 @@ Retro-feeling quality-of-life tweaks for jailbroken iOS 6 devices, starting with
 - Device: iPod touch 4,1
 - OS: iOS 6.1.6 / 10B500
 - Jailbreak runtime: Cydia + MobileSubstrate + PreferenceLoader
-- First tweak: battery percentage next to the stock battery icon
-- Next tweak in progress: CH33ZE Brightness Tray, an extra iOS 6 app-switcher page with a brightness slider
+- Battery percentage next to the stock battery icon
+- CH33ZE Brightness Tray: an extra iOS 6 app-switcher page with a brightness slider
+- Optimized: an iOS 6 app-switcher optimizer panel with RAM stats, Low Power controls, SSH toggles, and safe cleanup buttons
 
 ## Cydia source
 

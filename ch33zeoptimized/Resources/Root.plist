@@ -3,8 +3,8 @@
   items = (
     {
       cell = PSGroupCell;
-      label = "Safe performance toggles";
-      footerText = "Designed for an iPod touch 4 on iOS 6 used mostly for games, music, and old videos. These toggles skip missing services automatically.";
+      label = "Tray panel + safe performance toggles";
+      footerText = "Adds a CH33ZE Optimizer page to the iOS 6 multitasking tray, left of Brightness when both tweaks are installed. Low Power stops background/location/push/SSH-style services until turned off.";
     },
     {
       cell = PSSwitchCell;
@@ -44,13 +44,34 @@
     {
       cell = PSSwitchCell;
       defaults = "com.ch33ze.optimized";
+      key = disableLocation;
+      default = 0;
+      label = "Disable Location Services";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disablePush;
+      default = 0;
+      label = "Disable Push/background notifications";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableSSH;
+      default = 0;
+      label = "Disable SSH";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
       key = disableAnimations;
       default = 0;
       label = "Reduce SpringBoard animations";
     },
     {
       cell = PSGroupCell;
-      footerText = "Apply writes the daemon changes. Respring restarts SpringBoard so animation changes and Settings reload cleanly.";
+      footerText = "Apply writes daemon changes. The tray buttons also work directly: Free RAM, Clear Apps, Low Power On/Off, SSH On/Off. Turning SSH off can disconnect remote sessions.";
     },
     {
       cell = PSButtonCell;

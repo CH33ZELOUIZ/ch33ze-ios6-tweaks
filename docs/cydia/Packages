@@ -15,18 +15,18 @@ Author: CH33ZE
 Name: CH33ZE Brightness Tray
 
 Package: com.ch33ze.optimized
-Version: 0.1.0
+Version: 0.2.0
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 176
 Depends: mobilesubstrate, preferenceloader, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.optimized_0.1.0_iphoneos-arm.deb
-Size: 9478
-MD5sum: 29ee473a3fb64e1c72472b562bbfc0b4
-SHA1: a62196af8c5bec94b35346e37c615fb0641459a8
-SHA256: 8e4cf75aa32b44cbfb0e5068f32f183cdce4ae774051c72374b31c32a31b6187
+Filename: debs/com.ch33ze.optimized_0.2.0_iphoneos-arm.deb
+Size: 13362
+MD5sum: 02bad9fc2cae5ed7aea2d3f570b34935
+SHA1: 865fee5ca79b4d7aec6cd61a5491af05357a7090
+SHA256: cf2fef3d0fc778f3e938f2abd414debe3fe992340f9fe75dcd35b4ee4258719a
 Section: Tweaks
-Description: Simple iOS 6 performance toggles for games, music, and videos.
+Description: iOS 6 multitasking tray optimizer with RAM stats, Low Power, SSH controls, and safe cleanup tools.
 Author: CH33ZE
 Name: Optimized
 
