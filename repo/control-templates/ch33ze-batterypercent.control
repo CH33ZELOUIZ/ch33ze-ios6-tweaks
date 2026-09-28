@@ -1,0 +1,9 @@
+Package: com.ch33ze.batterypercent
+Name: CH33ZE Battery Percent
+Version: 0.1.0
+Architecture: iphoneos-arm
+Description: iOS 6 battery percentage helper for CH33ZE devices.
+Maintainer: CH33ZE
+Author: CH33ZE
+Section: Tweaks
+Depends: mobilesubstrate
