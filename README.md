@@ -10,6 +10,16 @@ Retro-feeling quality-of-life tweaks for jailbroken iOS 6 devices, starting with
 - First tweak: battery percentage next to the stock battery icon
 - Next tweak in progress: CH33ZE Brightness Tray, an extra iOS 6 app-switcher page with a brightness slider
 
+## Cydia source
+
+For iOS 6 Cydia, use the plain HTTP mirror:
+
+```text
+http://cydia.personaltechwiz.com/
+```
+
+Do not use the GitHub Pages HTTPS URL on the device; old Cydia can fail modern TLS.
+
 ## Battery percentage status
 
 The first safe implementation uses SpringBoard's existing preference key:
