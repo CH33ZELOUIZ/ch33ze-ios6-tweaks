@@ -1,6 +1,6 @@
 Package: com.ch33ze.brightnesstray
 Name: CH33ZE Brightness Tray
-Version: 0.1.0
+Version: 0.1.1
 Architecture: iphoneos-arm
 Description: Adds an iOS 6-style brightness slider page to the multitasking tray.
 Maintainer: CH33ZE

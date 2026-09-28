@@ -17,6 +17,7 @@
 static UIView *CHZBrightnessPage = nil;
 static UISlider *CHZBrightnessSlider = nil;
 static BOOL CHZAddingPage = NO;
+static const NSInteger CHZBrightnessPageTag = 0xC633B;
 
 static float CHZCurrentBrightness(void) {
     NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.apple.springboard.plist"];
@@ -58,6 +59,7 @@ static CHZBrightnessTarget *CHZTarget = nil;
 
 static UIView *CHZMakeBrightnessPage(CGRect frame) {
     UIView *page = [[UIView alloc] initWithFrame:frame];
+    [page setTag:CHZBrightnessPageTag];
     [page setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     [page setBackgroundColor:[UIColor clearColor]];
     [page setUserInteractionEnabled:YES];
@@ -127,8 +129,20 @@ static void CHZAttachBrightnessPage(SBAppSwitcherController *controller) {
         if (frame.size.width <= 0.0f) frame.size.width = [[UIScreen mainScreen] bounds].size.width;
         if (frame.size.height <= 0.0f) frame.size.height = 88.0f;
 
+        NSMutableArray *auxViews = [NSMutableArray array];
+        @try {
+            NSMutableArray *existingAuxViews = MSHookIvar<NSMutableArray *>(barView, "_auxViews");
+            for (UIView *view in existingAuxViews) {
+                if (view != CHZBrightnessPage && [view tag] != CHZBrightnessPageTag) {
+                    [auxViews addObject:view];
+                }
+            }
+        } @catch (NSException *exception) {
+        }
+
         CHZBrightnessPage = CHZMakeBrightnessPage(frame);
-        [barView addAuxiliaryViews:[NSArray arrayWithObject:CHZBrightnessPage]];
+        [auxViews addObject:CHZBrightnessPage];
+        [barView addAuxiliaryViews:auxViews];
     }
 
     CHZAddingPage = NO;

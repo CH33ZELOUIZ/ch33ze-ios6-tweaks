@@ -33,5 +33,5 @@ Implementation approach:
    - `/Applications/Preferences.app/MoreBright.png`
 2. Hook `SBAppSwitcherController -viewWillAppear`.
 3. Get `SBAppSwitcherBarView *_bottomBar` via `MSHookIvar`.
-4. Add our page using `[barView addAuxiliaryViews:@[brightnessView]]`.
+4. Read the stock `_auxViews`, keep Apple's existing music and volume pages, append the brightness page, then call `addAuxiliaryViews:` with the combined list.
 5. Slider changes call `[[SBBrightnessController sharedBrightnessController] _setBrightnessLevel:value showHUD:YES]`.
