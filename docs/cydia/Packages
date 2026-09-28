@@ -1,0 +1,16 @@
+Package: com.ch33ze.brightnesstray
+Version: 0.1.0
+Architecture: iphoneos-arm
+Maintainer: CH33ZE
+Installed-Size: 56
+Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
+Filename: debs/com.ch33ze.brightnesstray_0.1.0_iphoneos-arm.deb
+Size: 5298
+MD5sum: e6bd45e16299ad452dbdd0a0d190e5c1
+SHA1: 0bafb89c753267703fbb992fe219e270c1f8f727
+SHA256: 0f2a1f8bcca0284b698ec960f53bfea2818eac44ff4827086a1c6146f1110698
+Section: Tweaks
+Description: Adds an iOS 6-style brightness slider page to the multitasking tray.
+Author: CH33ZE
+Name: CH33ZE Brightness Tray
+

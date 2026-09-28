@@ -1,8 +1,8 @@
 Origin: CH33ZE iOS 6 Tweaks
 Label: CH33ZE iOS 6 Tweaks
 Suite: stable
-Version: 0.1
+Version: 1.0
 Codename: ios6
 Architectures: iphoneos-arm
 Components: main
-Description: Retro iOS 6 jailbreak tweaks for CH33ZE devices
+Description: Simple retro tweaks for jailbroken iOS 6 devices.

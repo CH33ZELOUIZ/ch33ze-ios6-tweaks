@@ -92,7 +92,7 @@ static UIView *CHZMakeBrightnessPage(CGRect frame) {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, y + 28.0f, width, 20.0f)];
     [label setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [label setText:@"Brightness"];
-    [label setTextAlignment:UITextAlignmentCenter];
+    [label setTextAlignment:NSTextAlignmentCenter];
     [label setTextColor:[UIColor whiteColor]];
     [label setShadowColor:[UIColor blackColor]];
     [label setShadowOffset:CGSizeMake(0.0f, -1.0f)];
