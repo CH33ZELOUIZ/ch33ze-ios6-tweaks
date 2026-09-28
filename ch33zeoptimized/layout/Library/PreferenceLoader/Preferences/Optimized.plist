@@ -1,0 +1,10 @@
+{
+  entry = {
+    bundle = Optimized;
+    cell = PSLinkCell;
+    detail = OptimizedRootListController;
+    icon = Optimized.png;
+    isController = 1;
+    label = Optimized;
+  };
+}

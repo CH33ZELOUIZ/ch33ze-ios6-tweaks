@@ -1,0 +1,66 @@
+{
+  title = Optimized;
+  items = (
+    {
+      cell = PSGroupCell;
+      label = "Safe performance toggles";
+      footerText = "Designed for an iPod touch 4 on iOS 6 used mostly for games, music, and old videos. These toggles skip missing services automatically.";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableOTA;
+      default = 1;
+      label = "Disable OTA updates";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableDiagnostics;
+      default = 1;
+      label = "Disable diagnostics/logging";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableMailSync;
+      default = 1;
+      label = "Disable Mail/account fetch";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableGameCenter;
+      default = 0;
+      label = "Disable Game Center daemon";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableSpotlight;
+      default = 0;
+      label = "Disable Spotlight search";
+    },
+    {
+      cell = PSSwitchCell;
+      defaults = "com.ch33ze.optimized";
+      key = disableAnimations;
+      default = 0;
+      label = "Reduce SpringBoard animations";
+    },
+    {
+      cell = PSGroupCell;
+      footerText = "Apply writes the daemon changes. Respring restarts SpringBoard so animation changes and Settings reload cleanly.";
+    },
+    {
+      cell = PSButtonCell;
+      label = "Apply Changes";
+      action = applySettings:;
+    },
+    {
+      cell = PSButtonCell;
+      label = "Apply and Respring";
+      action = applyAndRespring:;
+    }
+  );
+}

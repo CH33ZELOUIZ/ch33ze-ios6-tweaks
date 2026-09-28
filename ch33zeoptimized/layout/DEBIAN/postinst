@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+if [ -x /usr/bin/optimizedctl ]; then
+  chown root:wheel /usr/bin/optimizedctl 2>/dev/null || chown root:root /usr/bin/optimizedctl
+  chmod 4755 /usr/bin/optimizedctl
+fi
+exit 0

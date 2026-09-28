@@ -14,3 +14,19 @@ Description: Adds an iOS 6-style brightness slider page to the multitasking tray
 Author: CH33ZE
 Name: CH33ZE Brightness Tray
 
+Package: com.ch33ze.optimized
+Version: 0.1.0
+Architecture: iphoneos-arm
+Maintainer: CH33ZE
+Installed-Size: 176
+Depends: mobilesubstrate, preferenceloader, firmware (>= 6.0), firmware (<< 7.0)
+Filename: debs/com.ch33ze.optimized_0.1.0_iphoneos-arm.deb
+Size: 9478
+MD5sum: 29ee473a3fb64e1c72472b562bbfc0b4
+SHA1: a62196af8c5bec94b35346e37c615fb0641459a8
+SHA256: 8e4cf75aa32b44cbfb0e5068f32f183cdce4ae774051c72374b31c32a31b6187
+Section: Tweaks
+Description: Simple iOS 6 performance toggles for games, music, and videos.
+Author: CH33ZE
+Name: Optimized
+

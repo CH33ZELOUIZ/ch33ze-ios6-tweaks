@@ -1,0 +1,9 @@
+Package: com.ch33ze.optimized
+Name: Optimized
+Version: 0.1.0
+Architecture: iphoneos-arm
+Description: Simple iOS 6 performance toggles for games, music, and videos.
+Maintainer: CH33ZE
+Author: CH33ZE
+Section: Tweaks
+Depends: mobilesubstrate, preferenceloader, firmware (>= 6.0), firmware (<< 7.0)
