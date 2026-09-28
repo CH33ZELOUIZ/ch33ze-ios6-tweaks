@@ -1,6 +1,7 @@
 device-backups/
 packages/
 .theos/
+.theos-probe/
 *.deb
 .DS_Store
 *.log
