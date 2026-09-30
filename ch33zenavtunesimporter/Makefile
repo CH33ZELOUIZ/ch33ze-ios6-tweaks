@@ -1,5 +1,5 @@
 ARCHS = armv7
-TARGET = iphone:clang:latest:6.0
+TARGET = iphone:clang:6.1:6.0
 GO_EASY_ON_ME = 1
 
 include $(THEOS)/makefiles/common.mk

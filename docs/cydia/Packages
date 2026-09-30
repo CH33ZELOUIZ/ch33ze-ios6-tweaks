@@ -46,6 +46,38 @@ Description: Native iOS 6 Music library importer backend for NavTunes.
 Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
+Package: com.ch33ze.navtunesimporter
+Version: 0.2.0
+Architecture: iphoneos-arm
+Maintainer: CH33ZE
+Installed-Size: 136
+Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
+Filename: debs/com.ch33ze.navtunesimporter_0.2.0_iphoneos-arm.deb
+Size: 15046
+MD5sum: 0b91fab315f8a84e0a2e80488075356d
+SHA1: 6b5be10e373c79e22a4917eae7a1716bd7802e8a
+SHA256: 204527d5f5f94a2a64a157b03bae5acbddb9eec62c5f611109dadc8b5aa251d4
+Section: Tweaks
+Description: Native iOS 6 Music Navidrome browser and import queue for NavTunes.
+Author: CH33ZE
+Name: CH33ZE NavTunes Importer
+
+Package: com.ch33ze.navtunesimporter
+Version: 0.2.1
+Architecture: iphoneos-arm
+Maintainer: CH33ZE
+Installed-Size: 136
+Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
+Filename: debs/com.ch33ze.navtunesimporter_0.2.1_iphoneos-arm.deb
+Size: 16272
+MD5sum: 5e41575922172d636a813c9f88de3f6c
+SHA1: 8f01554ea1fe8ae9df74b2594c023d07397d066e
+SHA256: 70a38b89cceee4c8b1045456e022aa648d3c15bbd6a5231c09780233c74e6d93
+Section: Tweaks
+Description: Native iOS 6 Music Navidrome All Music/Playlists browser and import queue for NavTunes.
+Author: CH33ZE
+Name: CH33ZE NavTunes Importer
+
 Package: com.ch33ze.optimized
 Version: 0.1.0
 Architecture: iphoneos-arm
