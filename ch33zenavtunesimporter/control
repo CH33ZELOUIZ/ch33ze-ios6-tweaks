@@ -1,0 +1,9 @@
+Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
+Version: 0.1.1
+Architecture: iphoneos-arm
+Description: Native iOS 6 Music library importer backend for NavTunes.
+Maintainer: CH33ZE
+Author: CH33ZE
+Section: Tweaks
+Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
