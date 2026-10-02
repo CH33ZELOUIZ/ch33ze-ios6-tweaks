@@ -1,6 +1,6 @@
 Package: com.ch33ze.navtunesimporter
 Name: CH33ZE NavTunes Importer
-Version: 0.2.2
+Version: 0.2.4
 Architecture: iphoneos-arm
 Description: Native iOS 6 Music Navidrome All Music/Playlists browser and import queue for NavTunes.
 Maintainer: CH33ZE
