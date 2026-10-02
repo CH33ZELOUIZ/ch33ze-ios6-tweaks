@@ -15,16 +15,16 @@ Author: CH33ZE
 Name: CH33ZE Brightness Tray
 
 Package: com.ch33ze.navtunesimporter
-Version: 0.2.5
+Version: 0.2.6
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
-Installed-Size: 208
+Installed-Size: 224
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.navtunesimporter_0.2.5_iphoneos-arm.deb
-Size: 32332
-MD5sum: 77d430329f2ca68cd58491e8d064ae78
-SHA1: f809020c19b5883d016a2e90bc672e60135401fc
-SHA256: 87fc20002773c3f89db218165852e359c135e32af4ff6a621ac9f07d4ff92c2d
+Filename: debs/com.ch33ze.navtunesimporter_0.2.6_iphoneos-arm.deb
+Size: 33640
+MD5sum: edbb9241a57186487ce517b60ff1c619
+SHA1: 8b02b149ed7e8269f408db85f5152899622fcae3
+SHA256: ec862eff099dd947738a22f627fec219500e5c08407946557182b00f0fe6354b
 Section: Tweaks
 Description: Native iOS 6 Music Navidrome All Music/Playlists browser and import queue for NavTunes.
 Author: CH33ZE

@@ -627,7 +627,15 @@ static BOOL CHZPlayInNativeMusic(NSDictionary *item) {
     return YES;
 }
 
-typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 2, CHZNavLevelSongs = 3, CHZNavLevelPlaylistSongs = 4, CHZNavLevelSearch = 5, CHZNavLevelDownloads = 6, CHZNavLevelRecent = 7, CHZNavLevelSettings = 8 } CHZNavLevel;
+typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 2, CHZNavLevelSongs = 3, CHZNavLevelPlaylistSongs = 4, CHZNavLevelSearch = 5, CHZNavLevelDownloads = 6, CHZNavLevelRecent = 7, CHZNavLevelSettings = 8, CHZNavLevelPlaylists = 9 } CHZNavLevel;
+
+
+static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
+    if (![item isKindOfClass:[NSDictionary class]]) return item;
+    NSMutableDictionary *mut = [NSMutableDictionary dictionaryWithDictionary:item];
+    if ([navType length]) [mut setObject:navType forKey:@"navType"];
+    return mut;
+}
 
 @interface CHZNavidromeViewController : UITableViewController <UIAlertViewDelegate> {
     CHZNavLevel _level;
@@ -723,9 +731,11 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
     NSError *error = nil;
     NSMutableArray *results = [NSMutableArray array];
     if (_level == CHZNavLevelHome) {
+        // Home is local-only; playlists now live under All Music > Playlists.
+    } else if (_level == CHZNavLevelPlaylists) {
         NSDictionary *root = CHZFetchSubsonic(@"getPlaylists", [NSDictionary dictionary], &error);
         NSDictionary *playlists = [root objectForKey:@"playlists"];
-        for (NSDictionary *playlist in CHZArrayFromSubsonicObject([playlists objectForKey:@"playlist"])) if ([playlist isKindOfClass:[NSDictionary class]]) [results addObject:playlist];
+        for (NSDictionary *playlist in CHZArrayFromSubsonicObject([playlists objectForKey:@"playlist"])) if ([playlist isKindOfClass:[NSDictionary class]]) [results addObject:CHZItemWithNavType(playlist, @"playlist")];
     } else if (_level == CHZNavLevelSettings) {
         [results addObjectsFromArray:[self settingsRows]];
     } else if (_level == CHZNavLevelDownloads) {
@@ -738,9 +748,11 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
             [pool drain];
             return;
         }
-        NSDictionary *root = CHZFetchSubsonic(@"search3", [NSDictionary dictionaryWithObjectsAndKeys:_searchQuery, @"query", @"50", @"songCount", @"0", @"artistCount", @"0", @"albumCount", nil], &error);
+        NSDictionary *root = CHZFetchSubsonic(@"search3", [NSDictionary dictionaryWithObjectsAndKeys:_searchQuery, @"query", @"50", @"songCount", @"50", @"artistCount", @"50", @"albumCount", nil], &error);
         NSDictionary *search = [root objectForKey:@"searchResult3"];
-        for (NSDictionary *song in CHZArrayFromSubsonicObject([search objectForKey:@"song"])) if ([song isKindOfClass:[NSDictionary class]]) [results addObject:song];
+        for (NSDictionary *song in CHZArrayFromSubsonicObject([search objectForKey:@"song"])) if ([song isKindOfClass:[NSDictionary class]]) [results addObject:CHZItemWithNavType(song, @"song")];
+        for (NSDictionary *album in CHZArrayFromSubsonicObject([search objectForKey:@"album"])) if ([album isKindOfClass:[NSDictionary class]]) [results addObject:CHZItemWithNavType(album, @"album")];
+        for (NSDictionary *artist in CHZArrayFromSubsonicObject([search objectForKey:@"artist"])) if ([artist isKindOfClass:[NSDictionary class]]) [results addObject:CHZItemWithNavType(artist, @"artist")];
     } else if (_level == CHZNavLevelArtists) {
         NSDictionary *root = CHZFetchSubsonic(@"getArtists", [NSDictionary dictionary], &error);
         NSDictionary *artists = [root objectForKey:@"artists"];
@@ -767,13 +779,15 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
     [pool drain];
 }
 - (void)setItemsAndStatus:(NSDictionary *)payload { [self setItemsOnMain:[payload objectForKey:@"items"] status:[payload objectForKey:@"status"]]; }
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return _level == CHZNavLevelHome ? 2 : 1; }
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return 1; }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (_level == CHZNavLevelHome) return section == 0 ? 5 : MAX((NSInteger)[_items count], 1);
+    if (_level == CHZNavLevelHome) return 5;
+    if (_level == CHZNavLevelArtists) return MAX((NSInteger)[_items count] + 1, 1);
     return MAX((NSInteger)[_items count], 1);
 }
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (_level == CHZNavLevelHome) { if (section == 0) return @"NavTunes"; return [NSString stringWithFormat:@"Playlists — %@", _status]; }
+    if (_level == CHZNavLevelHome) return @"NavTunes";
+    if (_level == CHZNavLevelArtists) return [NSString stringWithFormat:@"All Music — %@", _status];
     if (_level == CHZNavLevelSettings) return [NSString stringWithFormat:@"%@ — %@", _status, CHZBaseURL(CHZPrefs())];
     return _status;
 }
@@ -781,9 +795,9 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
     NSString *ident = (_level == CHZNavLevelSongs || _level == CHZNavLevelPlaylistSongs || _level == CHZNavLevelSearch) ? @"song" : @"nav";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
     if (!cell) cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident] autorelease];
-    if (_level == CHZNavLevelHome && [indexPath section] == 0) {
-        if ([indexPath row] == 0) { cell.textLabel.text = @"All Music"; cell.detailTextLabel.text = @"Browse artists and albums"; }
-        else if ([indexPath row] == 1) { cell.textLabel.text = @"Search"; cell.detailTextLabel.text = @"Find songs, artists, or albums"; }
+    if (_level == CHZNavLevelHome) {
+        if ([indexPath row] == 0) { cell.textLabel.text = @"Search"; cell.detailTextLabel.text = @"Find songs, albums, or artists"; }
+        else if ([indexPath row] == 1) { cell.textLabel.text = @"All Music"; cell.detailTextLabel.text = @"Browse playlists, artists, and albums"; }
         else if ([indexPath row] == 2) { cell.textLabel.text = @"Downloads"; cell.detailTextLabel.text = @"Download and import status"; }
         else if ([indexPath row] == 3) { cell.textLabel.text = @"Recent"; cell.detailTextLabel.text = @"Latest completed imports"; }
         else { cell.textLabel.text = @"Settings"; cell.detailTextLabel.text = @"Server and account settings"; }
@@ -800,7 +814,17 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
-    NSDictionary *item = [_items objectAtIndex:[indexPath row]];
+    if (_level == CHZNavLevelArtists && [indexPath row] == 0) {
+        cell.textLabel.text = @"Playlists";
+        cell.detailTextLabel.text = @"Navidrome playlists";
+        cell.accessoryView = nil;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        return cell;
+    }
+    NSInteger itemRow = (_level == CHZNavLevelArtists) ? [indexPath row] - 1 : [indexPath row];
+    NSDictionary *item = [_items objectAtIndex:itemRow];
+    NSString *navType = [item objectForKey:@"navType"];
     if (_level == CHZNavLevelSettings) {
         NSString *key = [item objectForKey:@"key"];
         cell.textLabel.text = [item objectForKey:@"title"] ?: key;
@@ -820,23 +844,40 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     } else if (_level == CHZNavLevelSongs || _level == CHZNavLevelPlaylistSongs || _level == CHZNavLevelSearch) {
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ — %@", [item objectForKey:@"artist"] ?: _parentTitle ?: @"Unknown Artist", [item objectForKey:@"album"] ?: @"Navidrome"];
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        NSDictionary *record = CHZDownloadRecordForItem(item);
-        NSString *path = [record objectForKey:@"path"];
-        BOOL haveFile = [path length] && [[NSFileManager defaultManager] fileExistsAtPath:path];
-        BOOL imported = [[record objectForKey:@"state"] isEqualToString:@"Imported"];
-        [button setTitle:(imported ? @"Music" : (haveFile ? @"Import" : @"Download")) forState:UIControlStateNormal];
-        button.frame = CGRectMake(0, 0, 96, 32);
-        button.tag = [indexPath row];
-        [button addTarget:self action:@selector(downloadButton:) forControlEvents:UIControlEventTouchUpInside];
-        cell.accessoryView = button;
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        if ([navType isEqualToString:@"album"]) {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"Album — %@", [item objectForKey:@"artist"] ?: @"Unknown Artist"];
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+            [button setTitle:@"Album" forState:UIControlStateNormal];
+            button.frame = CGRectMake(0, 0, 96, 32);
+            button.tag = [indexPath row];
+            [button addTarget:self action:@selector(downloadAlbumButton:) forControlEvents:UIControlEventTouchUpInside];
+            cell.accessoryView = button;
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        } else if ([navType isEqualToString:@"artist"]) {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"Artist — %@ albums", CHZStringValue([item objectForKey:@"albumCount"])];
+            cell.accessoryView = nil;
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        } else {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"Song — %@ — %@", [item objectForKey:@"artist"] ?: _parentTitle ?: @"Unknown Artist", [item objectForKey:@"album"] ?: @"Navidrome"];
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+            NSDictionary *record = CHZDownloadRecordForItem(item);
+            NSString *path = [record objectForKey:@"path"];
+            BOOL haveFile = [path length] && [[NSFileManager defaultManager] fileExistsAtPath:path];
+            BOOL imported = [[record objectForKey:@"state"] isEqualToString:@"Imported"];
+            [button setTitle:(imported ? @"Music" : (haveFile ? @"Import" : @"Download")) forState:UIControlStateNormal];
+            button.frame = CGRectMake(0, 0, 96, 32);
+            button.tag = [indexPath row];
+            [button addTarget:self action:@selector(downloadButton:) forControlEvents:UIControlEventTouchUpInside];
+            cell.accessoryView = button;
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
     } else {
         NSString *count = CHZStringValue([item objectForKey:_level == CHZNavLevelArtists ? @"albumCount" : @"songCount"]);
         cell.detailTextLabel.text = [count length] ? [NSString stringWithFormat:@"%@ %@", count, _level == CHZNavLevelArtists ? @"albums" : @"songs"] : (_level == CHZNavLevelHome ? @"Playlist" : @"");
-        if (_level == CHZNavLevelHome) {
+        if (_level == CHZNavLevelPlaylists) {
             UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
             [button setTitle:@"Download" forState:UIControlStateNormal];
             button.frame = CGRectMake(0, 0, 96, 32);
@@ -854,10 +895,10 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (_level == CHZNavLevelHome && [indexPath section] == 0) {
-        CHZNavLevel next = CHZNavLevelArtists;
-        NSString *title = @"All Music";
-        if ([indexPath row] == 1) { next = CHZNavLevelSearch; title = @"Search"; }
+    if (_level == CHZNavLevelHome) {
+        CHZNavLevel next = CHZNavLevelSearch;
+        NSString *title = @"Search";
+        if ([indexPath row] == 1) { next = CHZNavLevelArtists; title = @"All Music"; }
         else if ([indexPath row] == 2) { next = CHZNavLevelDownloads; title = @"Downloads"; }
         else if ([indexPath row] == 3) { next = CHZNavLevelRecent; title = @"Recent"; }
         else if ([indexPath row] == 4) { next = CHZNavLevelSettings; title = @"Settings"; }
@@ -866,8 +907,17 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
         [vc release];
         return;
     }
+    if (_level == CHZNavLevelArtists && [indexPath row] == 0) {
+        CHZNavidromeViewController *vc = [[CHZNavidromeViewController alloc] initWithLevel:CHZNavLevelPlaylists parentId:nil title:@"Playlists"];
+        [[self navigationController] pushViewController:vc animated:YES];
+        [vc release];
+        return;
+    }
     if ([_items count] == 0) return;
-    NSDictionary *item = [_items objectAtIndex:[indexPath row]];
+    NSInteger itemRow = (_level == CHZNavLevelArtists) ? [indexPath row] - 1 : [indexPath row];
+    if (itemRow < 0 || itemRow >= (NSInteger)[_items count]) return;
+    NSDictionary *item = [_items objectAtIndex:itemRow];
+    NSString *navType = [item objectForKey:@"navType"];
     if (_level == CHZNavLevelSettings) {
         NSString *key = [item objectForKey:@"key"];
         BOOL secure = [key isEqualToString:@"password"] || [key isEqualToString:@"token"];
@@ -882,12 +932,12 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
         [[self tableView] reloadData];
         return;
     }
-    if (_level == CHZNavLevelSongs || _level == CHZNavLevelPlaylistSongs || _level == CHZNavLevelSearch) return;
+    if ((_level == CHZNavLevelSongs || _level == CHZNavLevelPlaylistSongs || _level == CHZNavLevelSearch) && ![navType isEqualToString:@"album"] && ![navType isEqualToString:@"artist"]) return;
     NSString *itemId = CHZStringValue([item objectForKey:@"id"]);
-    NSString *name = [item objectForKey:@"name"] ?: @"Navidrome";
+    NSString *name = [item objectForKey:@"name"] ?: [item objectForKey:@"title"] ?: @"Navidrome";
     CHZNavLevel nextLevel = CHZNavLevelPlaylistSongs;
-    if (_level == CHZNavLevelArtists) nextLevel = CHZNavLevelAlbums;
-    else if (_level == CHZNavLevelAlbums) nextLevel = CHZNavLevelSongs;
+    if (_level == CHZNavLevelArtists || (_level == CHZNavLevelSearch && [navType isEqualToString:@"artist"])) nextLevel = CHZNavLevelAlbums;
+    else if (_level == CHZNavLevelAlbums || (_level == CHZNavLevelSearch && [navType isEqualToString:@"album"])) nextLevel = CHZNavLevelSongs;
     CHZNavidromeViewController *vc = [[CHZNavidromeViewController alloc] initWithLevel:nextLevel parentId:itemId title:name];
     [[self navigationController] pushViewController:vc animated:YES];
     [vc release];
@@ -905,6 +955,12 @@ typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 
     }
     [button setTitle:@"Queued" forState:UIControlStateNormal];
     [NSThread detachNewThreadSelector:@selector(downloadSongThread:) toTarget:self withObject:song];
+}
+- (void)downloadAlbumButton:(UIButton *)button {
+    if (button.tag < 0 || button.tag >= (NSInteger)[_items count]) return;
+    NSDictionary *album = [_items objectAtIndex:button.tag];
+    [button setTitle:@"Queued" forState:UIControlStateNormal];
+    [NSThread detachNewThreadSelector:@selector(downloadAlbumThread:) toTarget:self withObject:album];
 }
 - (void)downloadPlaylistButton:(UIButton *)button {
     if (button.tag < 0 || button.tag >= (NSInteger)[_items count]) return;
@@ -1172,6 +1228,30 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     return added > 0;
 }
 
+- (void)downloadAlbumThread:(NSDictionary *)albumSummary {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSError *error = nil;
+    NSString *albumId = CHZStringValue([albumSummary objectForKey:@"id"]);
+    NSDictionary *root = CHZFetchSubsonic(@"getAlbum", [NSDictionary dictionaryWithObject:albumId ?: @"" forKey:@"id"], &error);
+    NSDictionary *album = [root objectForKey:@"album"];
+    NSArray *songs = CHZArrayFromSubsonicObject([album objectForKey:@"song"]);
+    NSString *albumName = [album objectForKey:@"name"] ?: [albumSummary objectForKey:@"name"] ?: @"album";
+    NSUInteger ok = 0;
+    NSUInteger index = 0;
+    for (NSDictionary *song in songs) {
+        index++;
+        if ([song isKindOfClass:[NSDictionary class]]) {
+            CHZSetDownloadRecord(song, @"Queued", [NSString stringWithFormat:@"Album %@ · %u/%u", albumName, index, [songs count]], nil);
+            NSError *songError = nil;
+            if (CHZDownloadAndImportSong(song, &songError)) ok++;
+            else CHZLog(@"album item download failed: %@", [songError localizedDescription]);
+        }
+    }
+    if (error) CHZLog(@"album download failed: %@", [error localizedDescription]);
+    else CHZLog(@"album download queued %u/%u tracks for %@", ok, [songs count], albumName);
+    [pool drain];
+}
+
 - (void)downloadPlaylistThread:(NSDictionary *)playlistSummary {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     NSError *error = nil;
@@ -1196,8 +1276,12 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     }
     if (error) CHZLog(@"playlist download failed: %@", [error localizedDescription]);
     else {
-        CHZEnsureMusicPlaylist(playlistName, songs);
-        CHZLog(@"playlist download queued %u/%u tracks for %@", ok, [songs count], playlistName);
+        BOOL playlistOK = NO;
+        for (int attempt = 0; attempt < 12 && !playlistOK; attempt++) {
+            playlistOK = CHZEnsureMusicPlaylist(playlistName, songs);
+            if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];
+        }
+        CHZLog(@"playlist download queued %u/%u tracks for %@; Music playlist %@", ok, [songs count], playlistName, playlistOK ? @"updated" : @"still waiting for imported tracks");
     }
     [pool drain];
 }
