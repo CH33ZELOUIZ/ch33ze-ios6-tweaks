@@ -6,7 +6,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = CH33ZENavTunesImporter
 CH33ZENavTunesImporter_FILES = Tweak.xm
-CH33ZENavTunesImporter_FRAMEWORKS = Foundation UIKit AVFoundation MediaPlayer
+CH33ZENavTunesImporter_FRAMEWORKS = Foundation UIKit CoreGraphics AVFoundation MediaPlayer
 CH33ZENavTunesImporter_LIBRARIES = substrate sqlite3
 
 TOOL_NAME = navtunesimport navtunesdirect
