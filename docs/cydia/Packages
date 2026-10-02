@@ -1,20 +1,4 @@
 Package: com.ch33ze.brightnesstray
-Version: 0.1.0
-Architecture: iphoneos-arm
-Maintainer: CH33ZE
-Installed-Size: 56
-Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.brightnesstray_0.1.0_iphoneos-arm.deb
-Size: 5298
-MD5sum: e6bd45e16299ad452dbdd0a0d190e5c1
-SHA1: 0bafb89c753267703fbb992fe219e270c1f8f727
-SHA256: 0f2a1f8bcca0284b698ec960f53bfea2818eac44ff4827086a1c6146f1110698
-Section: Tweaks
-Description: Adds an iOS 6-style brightness slider page to the multitasking tray.
-Author: CH33ZE
-Name: CH33ZE Brightness Tray
-
-Package: com.ch33ze.brightnesstray
 Version: 0.1.1
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
@@ -31,100 +15,20 @@ Author: CH33ZE
 Name: CH33ZE Brightness Tray
 
 Package: com.ch33ze.navtunesimporter
-Version: 0.1.1
-Architecture: iphoneos-arm
-Maintainer: CH33ZE
-Installed-Size: 116
-Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.navtunesimporter_0.1.1_iphoneos-arm.deb
-Size: 7564
-MD5sum: 774d8066eebab162eded3afdb025d199
-SHA1: d69430316dca75a9c16f39d3cf65a3936ab43d1a
-SHA256: 530ec7e324d743048276eebedaa2a680749ecf8ecfb5ed2c6e4f21fd4ca41833
-Section: Tweaks
-Description: Native iOS 6 Music library importer backend for NavTunes.
-Author: CH33ZE
-Name: CH33ZE NavTunes Importer
-
-Package: com.ch33ze.navtunesimporter
-Version: 0.2.0
-Architecture: iphoneos-arm
-Maintainer: CH33ZE
-Installed-Size: 136
-Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.navtunesimporter_0.2.0_iphoneos-arm.deb
-Size: 15046
-MD5sum: 0b91fab315f8a84e0a2e80488075356d
-SHA1: 6b5be10e373c79e22a4917eae7a1716bd7802e8a
-SHA256: 204527d5f5f94a2a64a157b03bae5acbddb9eec62c5f611109dadc8b5aa251d4
-Section: Tweaks
-Description: Native iOS 6 Music Navidrome browser and import queue for NavTunes.
-Author: CH33ZE
-Name: CH33ZE NavTunes Importer
-
-Package: com.ch33ze.navtunesimporter
-Version: 0.2.1
-Architecture: iphoneos-arm
-Maintainer: CH33ZE
-Installed-Size: 136
-Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.navtunesimporter_0.2.1_iphoneos-arm.deb
-Size: 16272
-MD5sum: 5e41575922172d636a813c9f88de3f6c
-SHA1: 8f01554ea1fe8ae9df74b2594c023d07397d066e
-SHA256: 70a38b89cceee4c8b1045456e022aa648d3c15bbd6a5231c09780233c74e6d93
-Section: Tweaks
-Description: Native iOS 6 Music Navidrome All Music/Playlists browser and import queue for NavTunes.
-Author: CH33ZE
-Name: CH33ZE NavTunes Importer
-
-Package: com.ch33ze.navtunesimporter
-Version: 0.2.2
+Version: 0.2.5
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 208
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.navtunesimporter_0.2.2_iphoneos-arm.deb
-Size: 27884
-MD5sum: 0713f1e590628c7b4a1290a02efffa2c
-SHA1: d61ff042aa551b077799b925c332c04514359f1d
-SHA256: 945924e9fa6c25574d072559356d6727ad0015eb697d282869ab2f4b26b43448
+Filename: debs/com.ch33ze.navtunesimporter_0.2.5_iphoneos-arm.deb
+Size: 32332
+MD5sum: 77d430329f2ca68cd58491e8d064ae78
+SHA1: f809020c19b5883d016a2e90bc672e60135401fc
+SHA256: 87fc20002773c3f89db218165852e359c135e32af4ff6a621ac9f07d4ff92c2d
 Section: Tweaks
 Description: Native iOS 6 Music Navidrome All Music/Playlists browser and import queue for NavTunes.
 Author: CH33ZE
 Name: CH33ZE NavTunes Importer
-
-Package: com.ch33ze.navtunesimporter
-Version: 0.2.4
-Architecture: iphoneos-arm
-Maintainer: CH33ZE
-Installed-Size: 208
-Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.navtunesimporter_0.2.4_iphoneos-arm.deb
-Size: 31212
-MD5sum: 2cee8460f6f1bb55ab490f5a45064ddc
-SHA1: 2cba85b39db87080c0780fff63d6f63b683a9b60
-SHA256: 1134835a990ab5d2e1e8cb60d80d69c29736ea640146959d13decdc5fb6b84ea
-Section: Tweaks
-Description: Native iOS 6 Music Navidrome All Music/Playlists browser and import queue for NavTunes.
-Author: CH33ZE
-Name: CH33ZE NavTunes Importer
-
-Package: com.ch33ze.optimized
-Version: 0.1.0
-Architecture: iphoneos-arm
-Maintainer: CH33ZE
-Installed-Size: 176
-Depends: mobilesubstrate, preferenceloader, firmware (>= 6.0), firmware (<< 7.0)
-Filename: debs/com.ch33ze.optimized_0.1.0_iphoneos-arm.deb
-Size: 9478
-MD5sum: 29ee473a3fb64e1c72472b562bbfc0b4
-SHA1: a62196af8c5bec94b35346e37c615fb0641459a8
-SHA256: 8e4cf75aa32b44cbfb0e5068f32f183cdce4ae774051c72374b31c32a31b6187
-Section: Tweaks
-Description: Simple iOS 6 performance toggles for games, music, and videos.
-Author: CH33ZE
-Name: Optimized
 
 Package: com.ch33ze.optimized
 Version: 0.2.0
