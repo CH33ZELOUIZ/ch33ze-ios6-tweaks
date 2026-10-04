@@ -2,17 +2,41 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>CH33ZE iOS 6 Tweaks</title>
+  <title>iOS 6 Tweaks - Cydia Repo</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+    .repo { background: #e8f4f8; padding: 12px; border-radius: 6px; font-size: 18px; font-weight: bold; margin: 20px 0; }
+    .warning { background: #fff3cd; padding: 12px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 20px 0; }
+    h2 { border-bottom: 2px solid #333; padding-bottom: 8px; margin-top: 30px; }
+    ul { margin: 10px 0; }
+    li { margin: 8px 0; }
+  </style>
 </head>
 <body>
-  <h1>CH33ZE iOS 6 Tweaks</h1>
-  <p>iOS 6 Cydia source: <code>http://cydia.personaltechwiz.com/</code></p>
-  <p>Use plain <strong>http</strong>, not GitHub Pages https. Old iOS 6 Cydia can fail modern TLS.</p>
-  <h2>Available tweaks</h2>
+  <h1>iOS 6 Tweaks</h1>
+  
+  <div class="repo">
+    <code>http://cydia.personaltechwiz.com/</code>
+  </div>
+  
+  <div class="warning">
+    <strong>Important:</strong> Use plain HTTP, not HTTPS. iOS 6's Cydia doesn't support modern TLS.
+  </div>
+
+  <h2>What's available</h2>
+  
   <ul>
-    <li><strong>CH33ZE Brightness Tray</strong> — Adds an iOS 6-style brightness slider page to the multitasking tray.</li>
-    <li><strong>Optimized</strong> — Adds Settings toggles for safe iOS 6 resource cleanup and an apply/respring button.</li>
-    <li><strong>CH33ZE NavTunes Importer</strong> — Adds a Navidrome page to Music/iPod with All Music and Playlists sections, downloads selected tracks or full playlists, and queues them for native iOS 6 Music import. Configure <code>/var/mobile/Library/Preferences/com.ch33ze.navtunes.plist</code> with <code>server</code>, <code>username</code>, and <code>password</code> (or <code>token</code>/<code>salt</code>).</li>
+    <li><strong>Brightness Tray</strong> — Quick brightness slider in the app switcher</li>
+    <li><strong>Optimized</strong> — System monitor with RAM stats and cleanup tools</li>
+    <li><strong>NavTunes Importer</strong> — Browse and download music from Navidrome in the Music app</li>
   </ul>
+
+  <h2>Tested on</h2>
+  <p>iPod Touch 4th gen, iOS 6.1.6 — should work on other iOS 6 devices too.</p>
+
+  <p style="margin-top: 40px; color: #666; font-size: 14px;">
+    Source code: <a href="https://github.com/CH33ZELOUIZ/ch33ze-ios6-tweaks">github.com/CH33ZELOUIZ/ch33ze-ios6-tweaks</a>
+  </p>
 </body>
 </html>

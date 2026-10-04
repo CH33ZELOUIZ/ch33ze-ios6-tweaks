@@ -1,51 +1,69 @@
-# CH33ZE iOS 6 Tweaks
+# iOS 6 Tweaks
 
-Retro-feeling quality-of-life tweaks for jailbroken iOS 6 devices, starting with an iPod touch 4th gen on iOS 6.1.6.
+A collection of quality-of-life tweaks I made for my jailbroken iPod Touch 4th gen running iOS 6.1.6. These bring some modern conveniences back to the classic iOS 6 interface.
 
-## Current device target
+## Installing
 
-- Device: iPod touch 4,1
-- OS: iOS 6.1.6 / 10B500
-- Jailbreak runtime: Cydia + MobileSubstrate + PreferenceLoader
-- Battery percentage next to the stock battery icon
-- CH33ZE Brightness Tray: an extra iOS 6 app-switcher page with a brightness slider
-- Optimized: an iOS 6 app-switcher optimizer panel with RAM stats, Low Power controls, SSH toggles, and safe cleanup buttons
+Add this Cydia source on your iOS 6 device:
 
-## Cydia source
-
-For iOS 6 Cydia, use the plain HTTP mirror:
-
-```text
+```
 http://cydia.personaltechwiz.com/
 ```
 
-Do not use the GitHub Pages HTTPS URL on the device; old Cydia can fail modern TLS.
+**Important:** Use plain HTTP, not HTTPS. iOS 6's old Cydia can't handle modern TLS certificates.
 
-## Battery percentage status
+## What's included
 
-The first safe implementation uses SpringBoard's existing preference key:
+### Brightness Tray
 
-```text
-SBShowBatteryLevel = true
+Adds a brightness slider as an extra page in the app switcher. Just swipe past your running apps to adjust brightness without leaving what you're doing.
+
+### Optimized
+
+A system monitor and cleanup panel in the app switcher. Shows RAM usage, lets you toggle SSH and Low Power mode, and includes safe cleanup tools to keep things running smooth.
+
+### NavTunes Importer
+
+Browse and download music from your Navidrome server directly in the native Music app. Adds a new tab where you can see all your music and playlists, then queue songs to download and import into your local library.
+
+To set it up, create `/var/mobile/Library/Preferences/com.ch33ze.navtunes.plist` with your server details:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>server</key>
+    <string>http://your-server.com</string>
+    <key>username</key>
+    <string>your-username</string>
+    <key>password</key>
+    <string>your-password</string>
+</dict>
+</plist>
 ```
 
-This was applied over SSH and verified by reading the preference back from the device.
+You can also use `token` and `salt` instead of `password` if you prefer token auth.
 
-A real MobileSubstrate version is planned next if we want custom positioning/styling beyond Apple's built-in percentage display.
+## Building from source
 
-## Repo layout
+Uses [Theos](https://theos.dev/). Each tweak has its own folder with a Makefile.
 
-```text
-ch33zebrightnesstray/  Theos source for the app-switcher brightness page.
-device-backups/   Local-only iPod preference backups; git-ignored.
-packages/         Built .deb packages; git-ignored until intentionally released.
-repo/             Cydia/APT repo output.
-tools/            Host-side helper scripts.
+```bash
+cd ch33zebrightnesstray
+make package
 ```
 
-## Safety defaults
+The .deb files end up in the `packages` folder.
 
-- Back up preference files before changing them.
-- Prefer reversible SpringBoard-only changes first.
-- Avoid LaunchDaemons and background killers until each process is identified.
-- Test each tweak manually over SSH before publishing it in the Cydia source.
+## Target device
+
+- iPod Touch 4,1
+- iOS 6.1.6 (10B500)
+- Jailbroken with Cydia + MobileSubstrate
+
+These should work on other iOS 6 devices too, but that's what I'm testing on.
+
+## License
+
+Do whatever you want with this code. No warranty, use at your own risk.

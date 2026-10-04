@@ -92,7 +92,7 @@ static BOOL CHZImportItem(NSDictionary *item) {
     id meta = [[Meta alloc] initWithDictionary:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:@"is-in-queue"]];
 #define CHZ_META(selName, obj) do { SEL s = NSSelectorFromString(selName); id o = (obj); if ([meta respondsToSelector:s] && o) ((void(*)(id,SEL,id))objc_msgSend)(meta, s, o); } while (0)
     CHZ_META(@"setPrimaryAssetURL:", [NSURL fileURLWithPath:tmpPath]);
-    CHZ_META(@"setViewStoreItemURL:", [NSURL URLWithString:@"http://cydia.personaltechwiz.com/"]);
+    CHZ_META(@"setViewStoreItemURL:", [NSURL URLWithString:@"https://github.com/CH33ZELOUIZ/ch33ze-ios6-tweaks"]);
     CHZ_META(@"setCopyright:", @"Imported by CH33ZE NavTunes");
     CHZ_META(@"setKind:", [item objectForKey:@"kind"] ?: @"song");
     CHZ_META(@"setTitle:", [item objectForKey:@"title"] ?: [[path lastPathComponent] stringByDeletingPathExtension]);
