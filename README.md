@@ -22,9 +22,9 @@ Adds a brightness slider as an extra page in the app switcher. Just swipe past y
 
 A system monitor and cleanup panel in the app switcher. Shows RAM usage, lets you toggle SSH and Low Power mode, and includes safe cleanup tools to keep things running smooth.
 
-### NavTunes Importer
+### NavTunes
 
-Browse and download music from your Navidrome server directly in the native Music app. Adds a new tab where you can see all your music and playlists, then queue songs to download and import into your local library.
+Download music from your Navidrome server straight to the stock Music app. Browse all your music and playlists, then import songs directly into your library.
 
 To set it up, create `/var/mobile/Library/Preferences/com.ch33ze.navtunes.plist` with your server details:
 
