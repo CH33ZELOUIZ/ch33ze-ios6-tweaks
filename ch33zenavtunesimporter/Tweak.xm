@@ -946,8 +946,8 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
             NSDictionary *record = CHZDownloadRecordForItem(item);
             NSString *path = [record objectForKey:@"path"];
             BOOL haveFile = [path length] && [[NSFileManager defaultManager] fileExistsAtPath:path];
-            BOOL imported = [[record objectForKey:@"state"] isEqualToString:@"Imported"];
-            [button setTitle:(imported ? @"Music" : (haveFile ? @"Import" : @"Download")) forState:UIControlStateNormal];
+            BOOL imported = [[record objectForKey:@"state"] isEqualToString:@"Imported"] || CHZMusicLibraryHasImportedItem(item);
+            [button setTitle:(imported ? @"In Library" : (haveFile ? @"Import" : @"Download")) forState:UIControlStateNormal];
             button.frame = CGRectMake(0, 0, 96, 32);
             button.tag = flatIndex;
             [button addTarget:self action:@selector(downloadButton:) forControlEvents:UIControlEventTouchUpInside];
@@ -1308,10 +1308,10 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     NSUInteger order = 1;
     for (NSDictionary *song in songs) {
         long long item = CHZFindImportedItemPID(db, song);
-        if (!item) { order++; continue; }
+        if (!item) continue;  // skip but don't increment order for missing items
         NSString *ins = [NSString stringWithFormat:@"insert into item_to_container (item_pid, container_pid, physical_order, shuffle_order) values (%lld,%lld,%u,%u)", item, container, (unsigned int)order, (unsigned int)order];
         if (CHZExecSQL(db, ins)) added++;
-        order++;
+        order++;  // only increment order for items we actually add
     }
     CHZExecSQL(db, @"commit");
     sqlite3_close(db);
@@ -1369,9 +1369,9 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     if (error) CHZLog(@"playlist download failed: %@", [error localizedDescription]);
     else {
         BOOL playlistOK = NO;
-        for (int attempt = 0; attempt < 12 && !playlistOK; attempt++) {
+        for (int attempt = 0; attempt < 20 && !playlistOK; attempt++) {
             playlistOK = CHZEnsureMusicPlaylist(playlistName, songs);
-            if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];
+            if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10.0]];
         }
         CHZLog(@"playlist download queued %u/%u tracks for %@; Music playlist %@", ok, [songs count], playlistName, playlistOK ? @"updated" : @"still waiting for imported tracks");
     }
