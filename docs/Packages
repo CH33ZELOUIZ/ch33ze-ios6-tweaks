@@ -1,10 +1,11 @@
 Package: com.ch33ze.brightnesstray
+Name: CH33ZE Brightness Tray
 Version: 0.1.0
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 56
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.brightnesstray_0.1.0_iphoneos-arm.deb
+Filename: debs/com.ch33ze.brightnesstray_0.1.0_iphoneos-arm.deb
 Size: 5298
 MD5sum: e6bd45e16299ad452dbdd0a0d190e5c1
 SHA1: 0bafb89c753267703fbb992fe219e270c1f8f727
@@ -15,12 +16,13 @@ Author: CH33ZE
 Name: CH33ZE Brightness Tray
 
 Package: com.ch33ze.brightnesstray
+Name: CH33ZE Brightness Tray
 Version: 0.1.1
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 56
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.brightnesstray_0.1.1_iphoneos-arm.deb
+Filename: debs/com.ch33ze.brightnesstray_0.1.1_iphoneos-arm.deb
 Size: 5652
 MD5sum: 958db2c350454dde0061ba4ad718b584
 SHA1: 1953f65ef06b858354f1889bd74f31a42988b8b9
@@ -31,12 +33,13 @@ Author: CH33ZE
 Name: CH33ZE Brightness Tray
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.1.1
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 116
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.1.1_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.1.1_iphoneos-arm.deb
 Size: 7564
 MD5sum: 774d8066eebab162eded3afdb025d199
 SHA1: d69430316dca75a9c16f39d3cf65a3936ab43d1a
@@ -47,12 +50,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.0
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 136
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.0_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.0_iphoneos-arm.deb
 Size: 15046
 MD5sum: 0b91fab315f8a84e0a2e80488075356d
 SHA1: 6b5be10e373c79e22a4917eae7a1716bd7802e8a
@@ -63,12 +67,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.1
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 136
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.1_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.1_iphoneos-arm.deb
 Size: 16272
 MD5sum: 5e41575922172d636a813c9f88de3f6c
 SHA1: 8f01554ea1fe8ae9df74b2594c023d07397d066e
@@ -79,12 +84,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.2
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 208
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.2_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.2_iphoneos-arm.deb
 Size: 27884
 MD5sum: 0713f1e590628c7b4a1290a02efffa2c
 SHA1: d61ff042aa551b077799b925c332c04514359f1d
@@ -95,12 +101,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.4
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 208
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.4_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.4_iphoneos-arm.deb
 Size: 31212
 MD5sum: 2cee8460f6f1bb55ab490f5a45064ddc
 SHA1: 2cba85b39db87080c0780fff63d6f63b683a9b60
@@ -111,12 +118,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.5
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 208
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.5_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.5_iphoneos-arm.deb
 Size: 32332
 MD5sum: 77d430329f2ca68cd58491e8d064ae78
 SHA1: f809020c19b5883d016a2e90bc672e60135401fc
@@ -127,12 +135,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.6
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 224
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.6_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.6_iphoneos-arm.deb
 Size: 33640
 MD5sum: edbb9241a57186487ce517b60ff1c619
 SHA1: 8b02b149ed7e8269f408db85f5152899622fcae3
@@ -143,12 +152,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: CH33ZE NavTunes Importer
 Version: 0.2.7
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 224
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.7_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.7_iphoneos-arm.deb
 Size: 35302
 MD5sum: 9d0340a74e1a236c3d1366ee88dea1e9
 SHA1: b47164f8a47bb4cb65999679c5708052cd13b5d3
@@ -159,12 +169,13 @@ Author: CH33ZE
 Name: CH33ZE NavTunes Importer
 
 Package: com.ch33ze.navtunesimporter
+Name: NavTunes
 Version: 0.2.9
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 224
 Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.navtunesimporter_0.2.9_iphoneos-arm.deb
+Filename: debs/com.ch33ze.navtunesimporter_0.2.9_iphoneos-arm.deb
 Size: 35390
 MD5sum: dff20b744cf14fed32a1e004ef957fa7
 SHA1: 9d2bb9097520341a12f48b6ccffa3f1aa85c2815
@@ -175,12 +186,13 @@ Author: CH33ZE
 Name: NavTunes
 
 Package: com.ch33ze.optimized
+Name: CH33ZE Optimized
 Version: 0.1.0
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 176
 Depends: mobilesubstrate, preferenceloader, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.optimized_0.1.0_iphoneos-arm.deb
+Filename: debs/com.ch33ze.optimized_0.1.0_iphoneos-arm.deb
 Size: 9478
 MD5sum: 29ee473a3fb64e1c72472b562bbfc0b4
 SHA1: a62196af8c5bec94b35346e37c615fb0641459a8
@@ -191,12 +203,13 @@ Author: CH33ZE
 Name: Optimized
 
 Package: com.ch33ze.optimized
+Name: CH33ZE Optimized
 Version: 0.2.0
 Architecture: iphoneos-arm
 Maintainer: CH33ZE
 Installed-Size: 176
 Depends: mobilesubstrate, preferenceloader, firmware (>= 6.0), firmware (<< 7.0)
-Filename: docs/debs/com.ch33ze.optimized_0.2.0_iphoneos-arm.deb
+Filename: debs/com.ch33ze.optimized_0.2.0_iphoneos-arm.deb
 Size: 13362
 MD5sum: 02bad9fc2cae5ed7aea2d3f570b34935
 SHA1: 865fee5ca79b4d7aec6cd61a5491af05357a7090
