@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NavTunes</title>
+  <style>
+    body { font-family: Helvetica, Arial, sans-serif; margin: 0; background: #f2f2f2; color: #222; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 16px; }
+    .hero { background: linear-gradient(135deg, #4720a0, #17a1c4); color: white; border-radius: 12px; padding: 18px; display: flex; align-items: center; gap: 16px; }
+    .hero img { width: 72px; height: 72px; border-radius: 16px; }
+    h1 { margin: 0; font-size: 28px; }
+    .card { background: white; border-radius: 10px; margin-top: 14px; padding: 14px; border: 1px solid #ddd; }
+    h2 { font-size: 18px; margin: 0 0 8px; }
+    ul { padding-left: 20px; margin: 8px 0 0; }
+    li { margin: 8px 0; }
+    .note { color: #555; font-size: 14px; }
+    code { background: #eee; border-radius: 4px; padding: 2px 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <img src="navtunes-icon.png" alt="NavTunes icon">
+      <div>
+        <h1>NavTunes</h1>
+        <div>Navidrome downloads inside the iOS 6 Music app</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>What is new in 0.3.0</h2>
+      <ul>
+        <li>Progress rows now show playlist and album download totals, live percent, and speed.</li>
+        <li>Downloads can be retried, imported, played, or cancelled from the Downloads screen.</li>
+        <li>Settings includes connection testing, auto-import toggle, cache cleanup, queue count, and bug-report diagnostics.</li>
+        <li>Playlist handling avoids direct stock Music database edits by default to reduce launch crashes and library corruption risk.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Setup</h2>
+      <p>Open Music, choose the Navidrome tab, then Settings. Enter your Navidrome/Subsonic server, username, and password or token/salt.</p>
+      <p class="note">Preference file: <code>/var/mobile/Library/Preferences/com.ch33ze.navtunes.plist</code></p>
+    </div>
+    <div class="card">
+      <h2>Known iOS 6 limitations</h2>
+      <p>Imported tracks may take a moment to appear in the stock Music library. Keep Downloads open to see the exact state. Direct playlist DB updates remain off unless advanced testing explicitly enables them.</p>
+    </div>
+  </div>
+</body>
+</html>

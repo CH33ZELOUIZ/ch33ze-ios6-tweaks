@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NavTunes for iOS 6</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; color: #172033; background: #f7f9fc; }
+    header { background: radial-gradient(circle at top left, #39c4f0, #4a23a7 58%, #18122f); color: white; padding: 56px 20px; }
+    .wrap { max-width: 920px; margin: 0 auto; }
+    .hero { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+    .hero img { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+    h1 { font-size: 48px; margin: 0 0 8px; }
+    h2 { margin-top: 0; }
+    .lead { font-size: 20px; opacity: .92; max-width: 680px; }
+    .button { display: inline-block; background: #ffcf43; color: #201400; padding: 12px 18px; border-radius: 9px; text-decoration: none; font-weight: 700; margin-right: 10px; }
+    section { padding: 28px 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .card { background: white; border: 1px solid #e1e6ef; border-radius: 14px; padding: 18px; box-shadow: 0 10px 24px rgba(27,45,78,.06); }
+    code { background: #edf1f7; padding: 3px 6px; border-radius: 5px; }
+    .shot { height: 180px; border-radius: 12px; background: linear-gradient(180deg, #fff, #dfe7f3); border: 1px solid #cfd8e7; display: flex; align-items: center; justify-content: center; color: #5d6b82; font-weight: 700; }
+    footer { color: #647085; padding: 30px 20px; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap hero">
+    <img src="../navtunes-icon.png" alt="NavTunes icon">
+    <div>
+      <h1>NavTunes</h1>
+      <p class="lead">Browse your Navidrome library and bring tracks into the stock iOS 6 Music app from a jailbroken iPhone or iPod touch.</p>
+      <a class="button" href="http://cydia.personaltechwiz.com/">Add Cydia Repo</a>
+      <a class="button" href="../debs/com.ch33ze.navtunesimporter_0.3.0_iphoneos-arm.deb">Download .deb</a>
+    </div>
+  </div>
+</header>
+<section><div class="wrap grid">
+  <div class="card"><h2>Music-first browsing</h2><p>Search songs, albums, and artists, browse playlists, and preview track metadata before downloading.</p></div>
+  <div class="card"><h2>Progress you can trust</h2><p>Downloads screen shows queued, downloading, imported, failed, cancelled, and playlist aggregate states.</p></div>
+  <div class="card"><h2>Built for iOS 6</h2><p>Manual memory management, armv7 Theos build, UIKit iOS 6 controls, and conservative Music library handling.</p></div>
+</div></section>
+<section><div class="wrap">
+  <h2>Screenshots</h2>
+  <div class="grid">
+    <div class="shot">Navidrome tab</div>
+    <div class="shot">Downloads manager</div>
+    <div class="shot">Settings + diagnostics</div>
+  </div>
+</div></section>
+<section><div class="wrap card">
+  <h2>Install</h2>
+  <ol>
+    <li>In Cydia on iOS 6, add <code>http://cydia.personaltechwiz.com/</code> as a source. Use HTTP, not HTTPS.</li>
+    <li>Install <strong>NavTunes</strong>.</li>
+    <li>Open Music → Navidrome → Settings and enter your server, username, and password or token/salt.</li>
+  </ol>
+  <p>Source: <a href="https://github.com/CH33ZELOUIZ/ch33ze-ios6-tweaks">github.com/CH33ZELOUIZ/ch33ze-ios6-tweaks</a></p>
+</div></section>
+<footer><div class="wrap">NavTunes 0.3.0. Runtime smoke testing on real iOS 6 hardware is still recommended before broad rollout.</div></footer>
+</body>
+</html>
