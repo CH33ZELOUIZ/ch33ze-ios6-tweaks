@@ -6,11 +6,11 @@ Date: 2026-10-04
 
 Command run:
 
-    export THEOS=/home/jeffrey/theos; make clean package FINALPACKAGE=1
+    export THEOS=../.theos-probe; make clean package FINALPACKAGE=1
 
 Result: succeeded. Theos produced:
 
-    /home/jeffrey/projects/ch33ze-ios6-tweaks/ch33zenavtunesimporter/packages/com.ch33ze.navtunesimporter_0.3.0_iphoneos-arm.deb
+    ch33zenavtunesimporter/packages/com.ch33ze.navtunesimporter_0.3.0_iphoneos-arm.deb
 
 Build warnings observed:
 
@@ -41,6 +41,30 @@ Verified package contents:
 - `Library/MobileSubstrate/DynamicLibraries/CH33ZENavTunesImporter.plist`
 - `usr/bin/navtunesimport`
 - `usr/bin/navtunesdirect`
+
+## Review follow-up verification
+
+After review feedback, the source was rebuilt and the release package was refreshed in `docs/debs/`.
+
+Changes verified by build/package checks:
+
+- Bug-report diagnostics now include iOS version, device model, NavTunes version, live Subsonic ping status, memory, storage, queue summary, playlist/download counts, and recent logs without password/token fields.
+- Settings now opens a real `View Queue` list backed by `/var/mobile/Library/NavTunesImportQueue.plist`; the queue screen auto-refreshes and includes a `Process` action for pending imports.
+- Settings now exposes `Direct Music playlist population` as an advanced toggle, defaulting on for the 0.3.0 behavior.
+- Playlist downloads now attempt stock Music playlist population by default and publish `Building stock Music playlist…` / `Stock Music playlist updated` status alongside the existing per-track download progress.
+
+Command rerun:
+
+    export THEOS=../.theos-probe; make clean package FINALPACKAGE=1
+
+Result: succeeded with the same expected private-selector/deprecated-target warnings listed above.
+
+Commands rerun:
+
+    cp ch33zenavtunesimporter/packages/com.ch33ze.navtunesimporter_0.3.0_iphoneos-arm.deb docs/debs/
+    cd docs && dpkg-scanpackages -m debs > Packages && gzip -9ck Packages > Packages.gz && bzip2 -9ck Packages > Packages.bz2
+
+Result: package copied and repository indexes regenerated with 14 entries.
 
 ## Repository verification
 
