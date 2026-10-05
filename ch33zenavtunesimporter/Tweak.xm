@@ -32,7 +32,7 @@ static NSDictionary *CHZDownloadRecordForSongId(NSString *songId);
 static UIImage *CHZNavidromeIcon(void);
 static NSString *CHZBaseURL(NSDictionary *prefs);
 static id CHZFetchSubsonic(NSString *method, NSDictionary *params, NSError **error);
-static NSString * const CHZNavTunesVersion = @"0.3.2";
+static NSString * const CHZNavTunesVersion = @"0.3.3";
 
 static BOOL CHZMusicLibraryHasImportedItem(NSDictionary *item) {
     NSString *title = [item objectForKey:@"title"] ?: @"";
@@ -1669,26 +1669,36 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     if (error) CHZLog(@"playlist download failed: %@", [error localizedDescription]);
     else {
         BOOL playlistOK = NO;
+        NSUInteger imported = 0;
         if (CHZPrefBool(@"advancedPlaylistDB", YES)) {
             CHZSetPlaylistStatus(playlistName, ok, [songs count], @"Waiting for Music imports to finish…");
-            NSUInteger imported = 0;
+            NSUInteger lastImported = 0;
             for (int attempt = 0; attempt < 60 && imported < ok; attempt++) {
                 imported = CHZCountImportedSongs(songs);
                 CHZSetPlaylistStatus(playlistName, ok, [songs count], [NSString stringWithFormat:@"Imported %u/%u to Music library", imported, ok]);
-                if (imported < ok) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];
+                if (imported < ok) {
+                    // If no new imports in last 30 seconds (6 attempts × 5s), give up and use what we have
+                    if (attempt > 0 && attempt % 6 == 0 && imported == lastImported) {
+                        CHZLog(@"playlist import stalled at %u/%u after %d attempts; proceeding with available songs", imported, ok, attempt);
+                        break;
+                    }
+                    lastImported = imported;
+                    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];
+                }
             }
-            if (imported >= ok) {
+            if (imported > 0) {
                 CHZSetPlaylistStatus(playlistName, ok, [songs count], @"Building stock Music playlist…");
                 for (int attempt = 0; attempt < 10 && !playlistOK; attempt++) {
                     playlistOK = CHZEnsureMusicPlaylist(playlistName, songs);
                     if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3.0]];
                 }
             } else {
-                CHZLog(@"playlist timeout: only %u/%u songs imported after waiting 300s", imported, ok);
+                CHZLog(@"playlist timeout: 0/%u songs imported; cannot create empty playlist", ok);
             }
         }
-        CHZSetPlaylistStatus(playlistName, ok, [songs count], playlistOK ? @"Stock Music playlist updated" : @"Tracks imported; Music playlist pending/disabled");
-        CHZLog(@"playlist download queued %u/%u tracks for %@; Music playlist %@", ok, [songs count], playlistName, playlistOK ? @"updated" : @"not directly modified");
+        NSString *statusMsg = playlistOK ? @"Stock Music playlist updated" : (imported > 0 ? [NSString stringWithFormat:@"Playlist created with %u/%u songs (some imports pending)", imported, ok] : @"No songs imported yet; retry when imports finish");
+        CHZSetPlaylistStatus(playlistName, ok, [songs count], statusMsg);
+        CHZLog(@"playlist download queued %u/%u tracks for %@; %u imported, Music playlist %@", ok, [songs count], playlistName, imported, playlistOK ? @"updated" : @"not created");
     }
     [self performSelectorOnMainThread:@selector(releaseAfterThread) withObject:nil waitUntilDone:NO];
     [pool drain];

@@ -228,6 +228,24 @@ Depiction: http://cydia.personaltechwiz.com/navtunes.html
 Icon: http://cydia.personaltechwiz.com/navtunes-icon.png
 Name: CH33ZE NavTunes Importer
 
+Package: com.ch33ze.navtunesimporter
+Version: 0.3.3
+Architecture: iphoneos-arm
+Maintainer: CH33ZE
+Installed-Size: 224
+Depends: mobilesubstrate, firmware (>= 6.0), firmware (<< 7.0)
+Filename: debs/com.ch33ze.navtunesimporter_0.3.3_iphoneos-arm.deb
+Size: 41422
+MD5sum: a42f1e27b8c3c5d6db85ceca52760e7d
+SHA1: 17827520d029ed1f9d705ccedb3f72efeb52d7dc
+SHA256: 26b862fb143c07282f8f79e8940a45dbe9b859e7e7a8fc3d2ad2c456daed2518
+Section: Tweaks
+Description: Download music from your Navidrome server straight to the stock iOS 6 Music app. Browse, search, track progress, retry/cancel downloads, and safely import songs into your library.
+Author: CH33ZE
+Depiction: http://cydia.personaltechwiz.com/navtunes.html
+Icon: http://cydia.personaltechwiz.com/navtunes-icon.png
+Name: CH33ZE NavTunes Importer
+
 Package: com.ch33ze.optimized
 Version: 0.1.0
 Architecture: iphoneos-arm
