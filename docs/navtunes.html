@@ -2,50 +2,113 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NavTunes</title>
   <style>
-    body { font-family: Helvetica, Arial, sans-serif; margin: 0; background: #f2f2f2; color: #222; font-size: 14px; overflow-x: hidden; }
-    .wrap { max-width: 640px; margin: 0 auto; padding: 12px; box-sizing: border-box; }
-    .hero { background: linear-gradient(135deg, #4720a0, #17a1c4); color: white; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; }
-    .hero img { width: 57px; height: 57px; border-radius: 12px; flex-shrink: 0; }
-    h1 { margin: 0; font-size: 22px; line-height: 1.2; word-wrap: break-word; }
-    .hero div { font-size: 13px; line-height: 1.3; }
-    .card { background: white; border-radius: 8px; margin-top: 12px; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; }
-    h2 { font-size: 16px; margin: 0 0 8px; }
-    p { margin: 8px 0; line-height: 1.4; word-wrap: break-word; }
-    ul { padding-left: 18px; margin: 8px 0 0; }
-    li { margin: 6px 0; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
-    .note { color: #555; font-size: 12px; word-wrap: break-word; }
-    code { background: #eee; border-radius: 3px; padding: 2px 4px; font-size: 11px; word-wrap: break-word; overflow-wrap: break-word; display: inline-block; max-width: 100%; }
+    body { 
+      font-family: Helvetica, Arial, sans-serif; 
+      margin: 0; 
+      background: #f2f2f2; 
+      color: #222; 
+      font-size: 12px;
+      -webkit-text-size-adjust: none;
+    }
+    .wrap { 
+      max-width: 320px; 
+      margin: 0 auto; 
+      padding: 8px;
+    }
+    .hero { 
+      background: linear-gradient(135deg, #4720a0, #17a1c4); 
+      color: white; 
+      border-radius: 6px; 
+      padding: 10px; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px;
+    }
+    .hero img { 
+      width: 48px; 
+      height: 48px; 
+      border-radius: 10px;
+    }
+    h1 { 
+      margin: 0; 
+      font-size: 18px; 
+      line-height: 1.2;
+    }
+    .hero div { 
+      font-size: 11px; 
+      line-height: 1.3;
+    }
+    .card { 
+      background: white; 
+      border-radius: 6px; 
+      margin-top: 8px; 
+      padding: 10px; 
+      border: 1px solid #ddd;
+    }
+    h2 { 
+      font-size: 14px; 
+      margin: 0 0 6px;
+      font-weight: bold;
+    }
+    p { 
+      margin: 6px 0; 
+      line-height: 1.3;
+    }
+    ul { 
+      padding-left: 16px; 
+      margin: 6px 0 0;
+    }
+    li { 
+      margin: 4px 0; 
+      font-size: 11px; 
+      line-height: 1.3;
+    }
+    .note { 
+      color: #555; 
+      font-size: 10px;
+    }
+    code { 
+      background: #eee; 
+      border-radius: 3px; 
+      padding: 2px 4px; 
+      font-size: 10px;
+      word-break: break-all;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="hero">
-      <img src="navtunes-icon.png" alt="NavTunes icon">
+      <img src="navtunes-icon.png" alt="NavTunes">
       <div>
         <h1>NavTunes</h1>
-        <div>Navidrome downloads inside the iOS 6 Music app</div>
+        <div>Navidrome on iOS 6 Music</div>
       </div>
     </div>
+    
     <div class="card">
-      <h2>What is new in 0.3.0</h2>
+      <h2>Version 0.3.1</h2>
+      <p><strong>Fix:</strong> Memory crash on playlist downloads (iPhone 4 / 512MB devices)</p>
+    </div>
+    
+    <div class="card">
+      <h2>Features</h2>
       <ul>
-        <li>Progress rows now show playlist and album download totals, live percent, and speed.</li>
-        <li>Downloads can be retried, imported, played, or cancelled from the Downloads screen.</li>
-        <li>Settings includes connection testing, auto-import toggle, cache cleanup, queue count, and bug-report diagnostics.</li>
-        <li>Playlist handling avoids direct stock Music database edits by default to reduce launch crashes and library corruption risk.</li>
+        <li>Download from Navidrome/Subsonic to Music app</li>
+        <li>Track progress, retry/cancel downloads</li>
+        <li>Safe import without library corruption</li>
+        <li>Connection testing & diagnostics</li>
       </ul>
     </div>
+    
     <div class="card">
       <h2>Setup</h2>
-      <p>Open Music, choose the Navidrome tab, then Settings. Enter your Navidrome/Subsonic server, username, and password or token/salt.</p>
-      <p class="note">Preference file: <code>/var/mobile/Library/Preferences/com.ch33ze.navtunes.plist</code></p>
-    </div>
-    <div class="card">
-      <h2>Known iOS 6 limitations</h2>
-      <p>Imported tracks may take a moment to appear in the stock Music library. Keep Downloads open to see the exact state. Direct playlist DB updates remain off unless advanced testing explicitly enables them.</p>
+      <p>Open Music → Navidrome tab → Settings</p>
+      <p>Enter your server URL, username, and password</p>
+      <p class="note">Config: <code>/var/mobile/Library/Preferences/com.ch33ze.navtunes.plist</code></p>
     </div>
   </div>
 </body>
