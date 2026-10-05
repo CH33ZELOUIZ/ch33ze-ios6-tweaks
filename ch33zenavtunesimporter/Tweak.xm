@@ -32,7 +32,7 @@ static NSDictionary *CHZDownloadRecordForSongId(NSString *songId);
 static UIImage *CHZNavidromeIcon(void);
 static NSString *CHZBaseURL(NSDictionary *prefs);
 static id CHZFetchSubsonic(NSString *method, NSDictionary *params, NSError **error);
-static NSString * const CHZNavTunesVersion = @"0.3.1";
+static NSString * const CHZNavTunesVersion = @"0.3.2";
 
 static BOOL CHZMusicLibraryHasImportedItem(NSDictionary *item) {
     NSString *title = [item objectForKey:@"title"] ?: @"";
@@ -541,9 +541,12 @@ static NSString *CHZURLEncode(NSString *value) {
 }
 
 static void CHZOpenBugReport(void) {
-    NSString *body = CHZURLEncode(CHZDiagnosticsText());
-    NSString *url = [NSString stringWithFormat:@"https://github.com/CH33ZELOUIZ/ch33ze-ios6-tweaks/issues/new?title=NavTunes%%20diagnostics&body=%@", body];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    NSString *diagnostics = CHZDiagnosticsText();
+    [[UIPasteboard generalPasteboard] setString:diagnostics];
+    NSString *message = @"Diagnostics copied to clipboard.\n\nEmail: jeffrey@personaltechwiz.com\n\nGitHub:\ngithub.com/CH33ZELOUIZ/ch33ze-ios6-tweaks/issues";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bug Report" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    [alert release];
 }
 
 static UIImage *CHZNavidromeIcon(void) {
@@ -694,6 +697,11 @@ static BOOL CHZDownloadAndImportSong(NSDictionary *song, NSError **outError) {
     NSString *existingState = [existing objectForKey:@"state"];
     if (([existingState isEqualToString:@"Downloaded"] || [existingState isEqualToString:@"Imported"]) && [existingPath length] && [[[existingPath pathExtension] lowercaseString] isEqualToString:@"mp3"] && [[NSFileManager defaultManager] fileExistsAtPath:existingPath]) {
         CHZSetDownloadRecord(song, @"Skipped", @"Already downloaded", existingPath);
+        CHZEndSongDownload(songId);
+        return YES;
+    }
+    if (CHZMusicLibraryHasImportedItem(song)) {
+        CHZSetDownloadRecord(song, @"Skipped", @"Already in Music library", nil);
         CHZEndSongDownload(songId);
         return YES;
     }
@@ -1248,7 +1256,7 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
         }
         if ([action isEqualToString:@"reportBug"]) {
             CHZOpenBugReport();
-            [self setStatus:@"Opened GitHub bug report"];
+            [self setStatus:@"Diagnostics copied to clipboard"];
             [[self tableView] reloadData];
             return;
         }
@@ -1545,6 +1553,20 @@ static long long CHZFindImportedItemPID(sqlite3 *db, NSDictionary *song) {
     return pid;
 }
 
+static NSUInteger CHZCountImportedSongs(NSArray *songs) {
+    if (![songs count]) return 0;
+    sqlite3 *db = NULL;
+    if (sqlite3_open_v2("/var/mobile/Media/iTunes_Control/iTunes/MediaLibrary.sqlitedb", &db, SQLITE_OPEN_READONLY, NULL) != SQLITE_OK) return 0;
+    sqlite3_busy_timeout(db, 5000);
+    NSUInteger found = 0;
+    for (NSDictionary *song in songs) {
+        if (![song isKindOfClass:[NSDictionary class]]) continue;
+        if (CHZFindImportedItemPID(db, song)) found++;
+    }
+    sqlite3_close(db);
+    return found;
+}
+
 static BOOL CHZExecSQL(sqlite3 *db, NSString *sql) {
     char *err = NULL;
     int rc = sqlite3_exec(db, [sql UTF8String], NULL, NULL, &err);
@@ -1648,10 +1670,21 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     else {
         BOOL playlistOK = NO;
         if (CHZPrefBool(@"advancedPlaylistDB", YES)) {
-            CHZSetPlaylistStatus(playlistName, ok, [songs count], @"Building stock Music playlist…");
-            for (int attempt = 0; attempt < 20 && !playlistOK; attempt++) {
-                playlistOK = CHZEnsureMusicPlaylist(playlistName, songs);
-                if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10.0]];
+            CHZSetPlaylistStatus(playlistName, ok, [songs count], @"Waiting for Music imports to finish…");
+            NSUInteger imported = 0;
+            for (int attempt = 0; attempt < 60 && imported < ok; attempt++) {
+                imported = CHZCountImportedSongs(songs);
+                CHZSetPlaylistStatus(playlistName, ok, [songs count], [NSString stringWithFormat:@"Imported %u/%u to Music library", imported, ok]);
+                if (imported < ok) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];
+            }
+            if (imported >= ok) {
+                CHZSetPlaylistStatus(playlistName, ok, [songs count], @"Building stock Music playlist…");
+                for (int attempt = 0; attempt < 10 && !playlistOK; attempt++) {
+                    playlistOK = CHZEnsureMusicPlaylist(playlistName, songs);
+                    if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3.0]];
+                }
+            } else {
+                CHZLog(@"playlist timeout: only %u/%u songs imported after waiting 300s", imported, ok);
             }
         }
         CHZSetPlaylistStatus(playlistName, ok, [songs count], playlistOK ? @"Stock Music playlist updated" : @"Tracks imported; Music playlist pending/disabled");
