@@ -8,6 +8,8 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <dlfcn.h>
 #import <sqlite3.h>
+#import <sys/mount.h>
+#import <sys/utsname.h>
 
 static NSString * const CHZQueuePath = @"/var/mobile/Library/NavTunesImportQueue.plist";
 static NSString * const CHZLogPath = @"/var/mobile/Library/Logs/NavTunesImporter.log";
@@ -29,6 +31,8 @@ static BOOL CHZPlayInNativeMusic(NSDictionary *item);
 static NSDictionary *CHZDownloadRecordForSongId(NSString *songId);
 static UIImage *CHZNavidromeIcon(void);
 static NSString *CHZBaseURL(NSDictionary *prefs);
+static id CHZFetchSubsonic(NSString *method, NSDictionary *params, NSError **error);
+static NSString * const CHZNavTunesVersion = @"0.3.1";
 
 static BOOL CHZMusicLibraryHasImportedItem(NSDictionary *item) {
     NSString *title = [item objectForKey:@"title"] ?: @"";
@@ -314,6 +318,11 @@ static NSUInteger CHZQueuedImportCount(void) {
     return [queue isKindOfClass:[NSArray class]] ? [queue count] : 0;
 }
 
+static NSArray *CHZQueuedImportItems(void) {
+    NSArray *queue = [NSArray arrayWithContentsOfFile:CHZQueuePath];
+    return [queue isKindOfClass:[NSArray class]] ? queue : [NSArray array];
+}
+
 static void CHZClearDownloadCache(void) {
     [[NSFileManager defaultManager] removeItemAtPath:CHZDownloadRoot error:nil];
     [[NSFileManager defaultManager] createDirectoryAtPath:CHZDownloadRoot withIntermediateDirectories:YES attributes:nil error:nil];
@@ -468,11 +477,62 @@ static NSString *CHZRecentLogSnippet(void) {
     return log;
 }
 
+static NSString *CHZDeviceModelString(void) {
+    struct utsname systemInfo;
+    if (uname(&systemInfo) == 0) return [NSString stringWithUTF8String:systemInfo.machine];
+    return @"Unknown device";
+}
+
+static NSString *CHZBytesDescription(unsigned long long bytes) {
+    if (bytes > 1073741824ULL) return [NSString stringWithFormat:@"%.1f GB", (double)bytes / 1073741824.0];
+    if (bytes > 1048576ULL) return [NSString stringWithFormat:@"%.1f MB", (double)bytes / 1048576.0];
+    return [NSString stringWithFormat:@"%llu bytes", bytes];
+}
+
+static NSString *CHZStorageStatus(void) {
+    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfFileSystemForPath:@"/var/mobile" error:nil];
+    if (![attrs isKindOfClass:[NSDictionary class]]) attrs = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:nil];
+    unsigned long long freeBytes = [[attrs objectForKey:NSFileSystemFreeSize] unsignedLongLongValue];
+    unsigned long long totalBytes = [[attrs objectForKey:NSFileSystemSize] unsignedLongLongValue];
+    return [NSString stringWithFormat:@"%@ free of %@", CHZBytesDescription(freeBytes), CHZBytesDescription(totalBytes)];
+}
+
+static NSString *CHZMemoryStatus(void) {
+    unsigned long long total = 0;
+    if ([[NSProcessInfo processInfo] respondsToSelector:@selector(physicalMemory)]) total = [[NSProcessInfo processInfo] physicalMemory];
+    return total ? [NSString stringWithFormat:@"%@ physical", CHZBytesDescription(total)] : @"Unavailable on this iOS version";
+}
+
+static NSString *CHZServerConnectionStatus(void) {
+    if (![CHZBaseURL(CHZPrefs()) length]) return @"Not configured";
+    NSError *error = nil;
+    NSDictionary *root = CHZFetchSubsonic(@"ping", [NSDictionary dictionary], &error);
+    if (root) return @"Connected (Subsonic ping OK)";
+    return [NSString stringWithFormat:@"Failed: %@", [error localizedDescription] ?: @"No response"];
+}
+
+static NSString *CHZQueueSummary(void) {
+    NSMutableArray *lines = [NSMutableArray array];
+    NSArray *queue = CHZQueuedImportItems();
+    for (NSUInteger i = 0; i < [queue count] && i < 25; i++) {
+        NSDictionary *item = [queue objectAtIndex:i];
+        if (![item isKindOfClass:[NSDictionary class]]) continue;
+        [lines addObject:[NSString stringWithFormat:@"%u. %@ — %@ — %@", i + 1, [item objectForKey:@"title"] ?: [item objectForKey:@"name"] ?: @"Untitled", [item objectForKey:@"artist"] ?: @"Unknown Artist", [item objectForKey:@"path"] ?: @"No file path"]];
+    }
+    if (![lines count]) return @"No queued imports.";
+    if ([queue count] > [lines count]) [lines addObject:[NSString stringWithFormat:@"…%u more", [queue count] - [lines count]]];
+    return [lines componentsJoinedByString:@"\n"];
+}
+
 static NSString *CHZDiagnosticsText(void) {
     NSDictionary *prefs = CHZPrefs();
-    return [NSString stringWithFormat:@"NavTunes diagnostics\nServer: %@\nFormat: %@\nMax bit rate: %@\nDownloads: %u\nQueued imports: %u\nPlaylist statuses: %u\nRecent log:\n%@",
-        CHZBaseURL(prefs), CHZStringValue([prefs objectForKey:@"format"]), CHZStringValue([prefs objectForKey:@"maxBitRate"]),
-        [CHZDownloadRecords() count], CHZQueuedImportCount(), [CHZPlaylistStatuses() count], CHZRecentLogSnippet()];
+    UIDevice *device = [UIDevice currentDevice];
+    return [NSString stringWithFormat:@"NavTunes diagnostics\nNavTunes version: %@\niOS version: %@ %@\nDevice model: %@\nServer: %@\nServer connection status: %@\nFormat: %@\nMax bit rate: %@\nAuto-import: %@\nDirect Music playlist population: %@\nDownloads: %u\nQueued imports: %u\nPlaylist statuses: %u\nMemory: %@\nStorage: %@\n\nQueued import detail:\n%@\n\nRecent log:\n%@",
+        CHZNavTunesVersion, [device systemName] ?: @"iOS", [device systemVersion] ?: @"Unknown", CHZDeviceModelString(),
+        [CHZBaseURL(prefs) length] ? CHZBaseURL(prefs) : @"Not configured", CHZServerConnectionStatus(),
+        CHZStringValue([prefs objectForKey:@"format"]), CHZStringValue([prefs objectForKey:@"maxBitRate"]),
+        CHZPrefBool(@"autoImport", YES) ? @"On" : @"Off", CHZPrefBool(@"advancedPlaylistDB", YES) ? @"On" : @"Off",
+        [CHZDownloadRecords() count], CHZQueuedImportCount(), [CHZPlaylistStatuses() count], CHZMemoryStatus(), CHZStorageStatus(), CHZQueueSummary(), CHZRecentLogSnippet()];
 }
 
 static NSString *CHZURLEncode(NSString *value) {
@@ -755,7 +815,7 @@ static BOOL CHZPlayInNativeMusic(NSDictionary *item) {
     return YES;
 }
 
-typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 2, CHZNavLevelSongs = 3, CHZNavLevelPlaylistSongs = 4, CHZNavLevelSearch = 5, CHZNavLevelDownloads = 6, CHZNavLevelRecent = 7, CHZNavLevelSettings = 8, CHZNavLevelPlaylists = 9 } CHZNavLevel;
+typedef enum { CHZNavLevelHome = 0, CHZNavLevelArtists = 1, CHZNavLevelAlbums = 2, CHZNavLevelSongs = 3, CHZNavLevelPlaylistSongs = 4, CHZNavLevelSearch = 5, CHZNavLevelDownloads = 6, CHZNavLevelRecent = 7, CHZNavLevelSettings = 8, CHZNavLevelPlaylists = 9, CHZNavLevelQueue = 10 } CHZNavLevel;
 
 
 static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
@@ -798,16 +858,17 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     if (_level == CHZNavLevelSearch) self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Search" style:UIBarButtonItemStyleBordered target:self action:@selector(showSearchPrompt)] autorelease];
-    else if (_level == CHZNavLevelDownloads) self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStyleBordered target:self action:@selector(clearDownloads)] autorelease];
+    else if (_level == CHZNavLevelDownloads || _level == CHZNavLevelQueue) self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:(_level == CHZNavLevelQueue ? @"Process" : @"Clear") style:UIBarButtonItemStyleBordered target:self action:(_level == CHZNavLevelQueue ? @selector(processQueueNow) : @selector(clearDownloads))] autorelease];
     else if (_level == CHZNavLevelSettings) self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Test" style:UIBarButtonItemStyleBordered target:self action:@selector(testSettings)] autorelease];
     else self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)] autorelease];
     [self refresh];
-    if (_level == CHZNavLevelDownloads || _level == CHZNavLevelRecent) _autoRefreshTimer = [[NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(refreshLocalStatus) userInfo:nil repeats:YES] retain];
+    if (_level == CHZNavLevelDownloads || _level == CHZNavLevelRecent || _level == CHZNavLevelQueue) _autoRefreshTimer = [[NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(refreshLocalStatus) userInfo:nil repeats:YES] retain];
     if (_level == CHZNavLevelSearch) [self showSearchPrompt];
 }
 - (void)refreshLocalStatus {
     if (_level == CHZNavLevelDownloads) { NSArray *d = [CHZPlaylistStatuses() arrayByAddingObjectsFromArray:CHZDedupItems(CHZDownloadRecords())]; [self setItemsOnMain:d status:[NSString stringWithFormat:@"%u item%@", [d count], [d count] == 1 ? @"" : @"s"]]; }
     else if (_level == CHZNavLevelRecent) [self setItemsOnMain:CHZRecentDownloadRecords() status:[NSString stringWithFormat:@"%u recent", [CHZRecentDownloadRecords() count]]];
+    else if (_level == CHZNavLevelQueue) [self setItemsOnMain:CHZQueuedImportItems() status:[NSString stringWithFormat:@"%u pending", CHZQueuedImportCount()]];
 }
 - (void)showSearchPrompt { UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Search Navidrome" message:@"Enter song, artist, or album" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Search", nil] autorelease]; alert.alertViewStyle = UIAlertViewStylePlainTextInput; [[alert textFieldAtIndex:0] setText:_searchQuery ?: @""]; [alert show]; }
 - (void)showPreviewForSong:(NSDictionary *)song {
@@ -841,6 +902,7 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
 }
 - (NSArray *)settingsRows {
     NSString *autoImport = CHZPrefBool(@"autoImport", YES) ? @"On" : @"Off";
+    NSString *playlistDB = CHZPrefBool(@"advancedPlaylistDB", YES) ? @"On" : @"Off";
     return [NSArray arrayWithObjects:
         [NSDictionary dictionaryWithObjectsAndKeys:@"server", @"key", @"Server address", @"title", @"Example: http://127.0.0.1:4533 or https://nav.example.com", @"detail", nil],
         [NSDictionary dictionaryWithObjectsAndKeys:@"username", @"key", @"Username", @"title", @"Navidrome/Subsonic username", @"detail", nil],
@@ -850,7 +912,8 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
         [NSDictionary dictionaryWithObjectsAndKeys:@"format", @"key", @"Stream format", @"title", @"Default mp3", @"detail", nil],
         [NSDictionary dictionaryWithObjectsAndKeys:@"maxBitRate", @"key", @"Max bit rate", @"title", @"Default 320", @"detail", nil],
         [NSDictionary dictionaryWithObjectsAndKeys:@"toggleAutoImport", @"action", @"Auto-import after download", @"title", autoImport, @"detail", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"showQueue", @"action", @"Queued imports", @"title", [NSString stringWithFormat:@"%u pending", CHZQueuedImportCount()], @"detail", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"showQueue", @"action", @"View Queue", @"title", [NSString stringWithFormat:@"%u pending imports", CHZQueuedImportCount()], @"detail", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"togglePlaylistDB", @"action", @"Direct Music playlist population", @"title", playlistDB, @"detail", nil],
         [NSDictionary dictionaryWithObjectsAndKeys:@"clearCache", @"action", @"Clear cached MP3s", @"title", CHZDownloadRoot, @"detail", nil],
         [NSDictionary dictionaryWithObjectsAndKeys:@"reportBug", @"action", @"Report a bug", @"title", @"Open GitHub issue with diagnostics", @"detail", nil],
         nil];
@@ -877,6 +940,7 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
     }
 }
 - (void)clearDownloads { CHZClearDownloadRecords(); [self refresh]; }
+- (void)processQueueNow { CHZProcessQueue(); [self refreshLocalStatus]; }
 - (void)setStatus:(NSString *)status { [_status release]; _status = [status copy]; }
 - (void)setItemsOnMain:(NSArray *)items status:(NSString *)status { [_items release]; _items = [items retain]; [self setStatus:status]; _loading = NO; [[self tableView] reloadData]; }
 - (void)setErrorOnMain:(NSError *)error { NSString *msg = [error localizedDescription] ?: @"Load failed"; [self setItemsOnMain:[NSArray array] status:msg]; CHZLog(@"Navidrome UI error: %@", msg); }
@@ -897,6 +961,8 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
     } else if (_level == CHZNavLevelDownloads) {
         [results addObjectsFromArray:CHZPlaylistStatuses()];
         [results addObjectsFromArray:CHZDedupItems(CHZDownloadRecords())];
+    } else if (_level == CHZNavLevelQueue) {
+        [results addObjectsFromArray:CHZQueuedImportItems()];
     } else if (_level == CHZNavLevelRecent) {
         [results addObjectsFromArray:CHZRecentDownloadRecords()];
     } else if (_level == CHZNavLevelSearch) {
@@ -1051,7 +1117,7 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
     cell.imageView.image = nil;
     NSString *artPath = [item objectForKey:@"artwork"];
     if ([artPath length] && [[NSFileManager defaultManager] fileExistsAtPath:artPath]) cell.imageView.image = [UIImage imageWithContentsOfFile:artPath];
-    if (_level == CHZNavLevelDownloads || _level == CHZNavLevelRecent) {
+    if (_level == CHZNavLevelDownloads || _level == CHZNavLevelRecent || _level == CHZNavLevelQueue) {
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ — %@", [item objectForKey:@"state"] ?: @"Status", [item objectForKey:@"detail"] ?: ([item objectForKey:@"artist"] ?: @"")];
         NSString *state = [item objectForKey:@"state"];
         NSString *buttonTitle = nil;
@@ -1164,8 +1230,14 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
             return;
         }
         if ([action isEqualToString:@"showQueue"]) {
-            [self setStatus:[NSString stringWithFormat:@"%u queued imports in %@", CHZQueuedImportCount(), CHZQueuePath]];
-            [[self tableView] reloadData];
+            CHZNavidromeViewController *vc = [[CHZNavidromeViewController alloc] initWithLevel:CHZNavLevelQueue parentId:nil title:@"Import Queue"];
+            [[self navigationController] pushViewController:vc animated:YES];
+            [vc release];
+            return;
+        }
+        if ([action isEqualToString:@"togglePlaylistDB"]) {
+            CHZWritePrefBool(@"advancedPlaylistDB", !CHZPrefBool(@"advancedPlaylistDB", YES));
+            [self refresh];
             return;
         }
         if ([action isEqualToString:@"clearCache"]) {
@@ -1185,7 +1257,7 @@ static NSDictionary *CHZItemWithNavType(NSDictionary *item, NSString *navType) {
         [self showSettingPromptForKey:key title:[item objectForKey:@"title"] ?: key message:[item objectForKey:@"detail"] ?: @"Enter value" secure:secure];
         return;
     }
-    if (_level == CHZNavLevelDownloads || _level == CHZNavLevelRecent) {
+    if (_level == CHZNavLevelDownloads || _level == CHZNavLevelRecent || _level == CHZNavLevelQueue) {
         NSString *path = [item objectForKey:@"path"];
         if ([[item objectForKey:@"state"] isEqualToString:@"Imported"] && CHZPlayInNativeMusic(item)) [self setStatus:[NSString stringWithFormat:@"Playing %@ in Music", [item objectForKey:@"title"] ?: @"download"]];
         else if ([path length] && [[NSFileManager defaultManager] fileExistsAtPath:path]) { CHZEnqueueImport(item); CHZProcessQueue(); [self setStatus:[NSString stringWithFormat:@"Imported %@ to Music", [item objectForKey:@"title"] ?: @"download"]]; }
@@ -1528,14 +1600,16 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     NSUInteger ok = 0;
     NSUInteger index = 0;
     for (NSDictionary *song in songs) {
-        index++;
-        if ([song isKindOfClass:[NSDictionary class]]) {
-            if (CHZShouldCancelSong(song)) { CHZSetPlaylistStatus(albumName, ok, [songs count], @"Cancelled"); continue; }
-            CHZSetDownloadRecord(song, @"Queued", [NSString stringWithFormat:@"Album %@ · %u/%u", albumName, index, [songs count]], nil);
-            NSError *songError = nil;
-            if (CHZDownloadAndImportSong(song, &songError)) ok++;
-            else CHZLog(@"album item download failed: %@", [songError localizedDescription]);
-            CHZSetPlaylistStatus(albumName, ok, [songs count], [NSString stringWithFormat:@"Album track %u/%u", index, [songs count]]);
+        @autoreleasepool {  // Drain memory after each song to prevent crashes on low-memory devices
+            index++;
+            if ([song isKindOfClass:[NSDictionary class]]) {
+                if (CHZShouldCancelSong(song)) { CHZSetPlaylistStatus(albumName, ok, [songs count], @"Cancelled"); continue; }
+                CHZSetDownloadRecord(song, @"Queued", [NSString stringWithFormat:@"Album %@ · %u/%u", albumName, index, [songs count]], nil);
+                NSError *songError = nil;
+                if (CHZDownloadAndImportSong(song, &songError)) ok++;
+                else CHZLog(@"album item download failed: %@", [songError localizedDescription]);
+                CHZSetPlaylistStatus(albumName, ok, [songs count], [NSString stringWithFormat:@"Album track %u/%u", index, [songs count]]);
+            }
         }
     }
     if (error) CHZLog(@"album download failed: %@", [error localizedDescription]);
@@ -1557,27 +1631,30 @@ static BOOL CHZEnsureMusicPlaylist(NSString *playlistName, NSArray *songs) {
     NSUInteger ok = 0;
     NSUInteger index = 0;
     for (NSDictionary *song in songs) {
-        index++;
-        if ([song isKindOfClass:[NSDictionary class]]) {
-            NSMutableDictionary *playlistSong = [NSMutableDictionary dictionaryWithDictionary:song];
-            if ([playlistName length]) [playlistSong setObject:playlistName forKey:@"playlist"];
-            CHZSetDownloadRecord(playlistSong, @"Queued", [NSString stringWithFormat:@"Playlist %@ · %u/%u", playlistName, index, [songs count]], nil);
-            NSError *songError = nil;
-            if (CHZDownloadAndImportSong(playlistSong, &songError)) ok++;
-            else CHZLog(@"playlist item download failed: %@", [songError localizedDescription]);
-            CHZSetPlaylistStatus(playlistName, ok, [songs count], [NSString stringWithFormat:@"Downloaded %u/%u", ok, [songs count]]);
+        @autoreleasepool {  // Drain memory after each song to prevent crashes on low-memory devices (iPhone 4: 512MB)
+            index++;
+            if ([song isKindOfClass:[NSDictionary class]]) {
+                NSMutableDictionary *playlistSong = [NSMutableDictionary dictionaryWithDictionary:song];
+                if ([playlistName length]) [playlistSong setObject:playlistName forKey:@"playlist"];
+                CHZSetDownloadRecord(playlistSong, @"Queued", [NSString stringWithFormat:@"Playlist %@ · %u/%u", playlistName, index, [songs count]], nil);
+                NSError *songError = nil;
+                if (CHZDownloadAndImportSong(playlistSong, &songError)) ok++;
+                else CHZLog(@"playlist item download failed: %@", [songError localizedDescription]);
+                CHZSetPlaylistStatus(playlistName, ok, [songs count], [NSString stringWithFormat:@"Downloaded %u/%u", ok, [songs count]]);
+            }
         }
     }
     if (error) CHZLog(@"playlist download failed: %@", [error localizedDescription]);
     else {
         BOOL playlistOK = NO;
-        if (CHZPrefBool(@"advancedPlaylistDB", NO)) {
+        if (CHZPrefBool(@"advancedPlaylistDB", YES)) {
+            CHZSetPlaylistStatus(playlistName, ok, [songs count], @"Building stock Music playlist…");
             for (int attempt = 0; attempt < 20 && !playlistOK; attempt++) {
                 playlistOK = CHZEnsureMusicPlaylist(playlistName, songs);
                 if (!playlistOK) [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10.0]];
             }
         }
-        CHZSetPlaylistStatus(playlistName, ok, [songs count], playlistOK ? @"Music playlist updated" : @"Downloads complete; use Music sync/import after items appear");
+        CHZSetPlaylistStatus(playlistName, ok, [songs count], playlistOK ? @"Stock Music playlist updated" : @"Tracks imported; Music playlist pending/disabled");
         CHZLog(@"playlist download queued %u/%u tracks for %@; Music playlist %@", ok, [songs count], playlistName, playlistOK ? @"updated" : @"not directly modified");
     }
     [self performSelectorOnMainThread:@selector(releaseAfterThread) withObject:nil waitUntilDone:NO];
